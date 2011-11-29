@@ -13,6 +13,6 @@ import co.za.countdown.Countdown
  */
 
 object TestStartup extends App{
-  GamesWebScrape.getOnline foreach ( (countDown: Countdown) => CountdownService.upsertCountdown(countDown) )
+  GamesWebScrape.getOnline foreach ( (countDown: (String,  DateTime)) => CountdownService.upsertCountdown(countDown) )
   unfiltered.jetty.Http(55555).filter(ServeCountdowns.countdowns).run()
 }

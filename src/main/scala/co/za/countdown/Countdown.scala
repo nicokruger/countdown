@@ -8,4 +8,4 @@ import org.joda.time.DateTime
  * Time: 9:30 PM
  */
 
-case class Countdown(name: String, eventDate: DateTime) {}
+case class Countdown(name: String, url:String, eventDate: DateTime) {}

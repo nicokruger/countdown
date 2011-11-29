@@ -9,6 +9,8 @@ import net.liftweb.json.JsonDSL._
 import co.za.countdown.counter.CountdownService
 import org.joda.time.DateTime
 import co.za.countdown.Countdown
+import java.net.URL
+import org.bson.types.ObjectId
 
 /**
  * User: dawid
@@ -22,7 +24,8 @@ object ServeCountdowns {
   val countdowns = unfiltered.filter.Planify {
     case GET(Path(Seg("countdown" :: q :: Nil))) => {
 
-      CountdownService.retrieveByName(q) match {
+      CountdownService.retrieveById(new ObjectId(q)) match {
+
         case Some(item: Countdown) => {
           JsonContent ~> ResponseString(write(MillisCountdown(item)))
         }
@@ -30,17 +33,17 @@ object ServeCountdowns {
       }
     }
     case GET(Path(Seg("countdownlist" :: Nil))) => {
-      JsonContent ~> ResponseString(compact(render("countdowns" -> CountdownService.retrieveAll.map(_.name))))
+      JsonContent ~> ResponseString(compact(render("countdowns" -> CountdownService.retrieveAll.map( (cd:Countdown) => ( ("label" -> cd.name) ~ ("url" -> cd.url) ) ))))
     }
     case _ => JsonContent ~> ResponseString(compact(render("error" -> "Invalid request")))
   }
 }
 
 //temp workaround
-case class MillisCountdown(name: String, eventDate: Long)
+case class MillisCountdown(name: String, url: String,  eventDate: Long)
 
 object MillisCountdown {
-  def apply(countdown: Countdown):MillisCountdown = MillisCountdown(countdown.name, countdown.eventDate.getMillis)
+  def apply(countdown: Countdown):MillisCountdown = MillisCountdown(countdown.name, countdown.url, countdown.eventDate.getMillis)
 }
 
 
