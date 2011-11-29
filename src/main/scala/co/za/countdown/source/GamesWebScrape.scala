@@ -5,9 +5,9 @@ import scala.xml.parsing.NoBindingFactoryAdapter
 import org.xml.sax.InputSource
 import xml.{NodeSeq, Node}
 import java.io.InputStream
-import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import collection.mutable.ListBuffer
+import org.joda.time.{DateTime, LocalDate}
 
 /**
  * User: dawidmalan
@@ -32,35 +32,34 @@ object GamesWebScrape {
     parseDates(adapter.loadXML(source, parser))
   }
 
-  def parseDates(node: Node): List[(String, LocalDate)] = {
-    var currentYM: Option[LocalDate] = None
-    val items = new ListBuffer[(String, LocalDate)]
+  def parseDates(node: Node): List[(String, DateTime)] = {
+    var currentYM: Option[DateTime] = None
+    val items = new ListBuffer[(String, DateTime)]
 
-    val useableTrs = ((node \\ "table").drop(2) \ "tr") dropWhile ((tr: Node) => parseYM((tr \ "td").head).isEmpty)
+    val usable = ((node \\ "table").drop(2) \ "tr") dropWhile ((tr: Node) => parseYM((tr \ "td").head).isEmpty)
 
-    useableTrs foreach ((n: NodeSeq) => {
+    usable foreach ((n: NodeSeq) => {
       if ((n \ "td").length == 1) {
         currentYM = parseYM(n \ "td")
       }
       else parseItem(n, currentYM) foreach {
-        item: (String, LocalDate) => items.append(item)
+        item: (String, DateTime) => items.append(item)
       }
     })
     items.toList
   }
 
-  def parseYM(n: NodeSeq): Option[LocalDate] = {
+  def parseYM(n: NodeSeq): Option[DateTime] = {
     try {
       val dateText = n.text.replace(32.toChar, ' ').replace(160.toChar, ' ').trim()
-      val res = monthYearFormat.parseDateTime(dateText)
-      Some(res.toLocalDate)
+      Some(monthYearFormat.parseDateTime(dateText))
     }
     catch {
       case e: Exception => None
     }
   }
 
-  def parseItem(n: NodeSeq, ymo: Option[LocalDate]): Option[(String, LocalDate)] = {
+  def parseItem(n: NodeSeq, ymo: Option[DateTime]): Option[(String, DateTime)] = {
     val cols = (n \ "td").map(_.text).toList
     ymo match {
       case Some(ym) => {
