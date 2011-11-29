@@ -3,9 +3,12 @@ package co.za.countdown.serve
 
 import unfiltered.request._
 import unfiltered.response._
-import unfiltered.request.GET
+import net.liftweb.json._
+import net.liftweb.json.Serialization.{read, write}
+import net.liftweb.json.JsonDSL._
 import co.za.countdown.counter.CountdownService
 import org.joda.time.DateTime
+import co.za.countdown.Countdown
 
 /**
  * User: dawid
@@ -14,17 +17,30 @@ import org.joda.time.DateTime
  */
 
 object ServeCountdowns {
-   val countdowns = unfiltered.filter.Planify {
+  implicit val formats = Serialization.formats(NoTypeHints)
+
+  val countdowns = unfiltered.filter.Planify {
     case GET(Path(Seg("countdown" :: q :: Nil))) => {
 
-       CountdownService.retrieveByName(q) match{
-         case Some( item: (String, DateTime)) => {
-             ResponseString("Countdown for: " + item._1 + " " + (item._2.getMillis - System.currentTimeMillis()).toString  +" millis to go!")
-         }
-         case None => ResponseString("No countdown found for "+q)
-       }
+      CountdownService.retrieveByName(q) match {
+        case Some(item: Countdown) => {
+          JsonContent ~> ResponseString(write(MillisCountdown(item)))
+        }
+        case None => ResponseString("No countdown found for " + q)
+      }
     }
-    case _ => ResponseString("404")
+    case GET(Path(Seg("countdownlist" :: Nil))) => {
+      JsonContent ~> ResponseString(compact(render("countdowns" -> CountdownService.retrieveAll.map(_.name))))
+    }
+    case _ => JsonContent ~> ResponseString(compact(render("error" -> "Invalid request")))
   }
-
 }
+
+//temp workaround
+case class MillisCountdown(name: String, eventDate: Long)
+
+object MillisCountdown {
+  def apply(countdown: Countdown):MillisCountdown = MillisCountdown(countdown.name, countdown.eventDate.getMillis)
+}
+
+

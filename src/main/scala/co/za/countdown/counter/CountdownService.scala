@@ -4,6 +4,8 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.MongoConnection
 import com.mongodb.casbah.commons.conversions.scala._
+import co.za.countdown.Countdown._
+import co.za.countdown.Countdown
 import org.joda.time.{DateTime, LocalDate}
 
 /**
@@ -18,18 +20,18 @@ object CountdownService {
   val mongo = MongoConnection()
   val coll = mongo("countDownDB")("countdown")
 
-  def upsertCountdown( countdown: (String, DateTime)) = {
-    coll.update(MongoDBObject("name" -> countdown._1), MongoDBObject("name" -> countdown._1, "date" -> countdown._2),true, false)
+  def upsertCountdown( countdown: Countdown) = {
+    coll.update(MongoDBObject("name" -> countdown.name), MongoDBObject("name" -> countdown.name, "date" -> countdown.eventDate),true, false)
   }
 
-  def retrieveAll: Iterable[(String,  LocalDate)] = {
+  def retrieveAll: Iterable[Countdown] = {
     for { x <- coll}
-      yield (x.getAsOrElse[String]("name", "Unnamed"), x.getAsOrElse[LocalDate]("date", new LocalDate()))
+      yield Countdown(x.getAsOrElse[String]("name", "Unnamed"), x.getAsOrElse[DateTime]("date", new DateTime()))
   }
 
-  def retrieveByName(name:String) : Option[(String,  LocalDate)] = {
+  def retrieveByName(name:String) : Option[Countdown] = {
      coll.findOne( MongoDBObject("name" -> name) ).map( (dbobj:DBObject) =>
-       (name, dbobj.getAsOrElse[LocalDate]("date", new LocalDate())))
+       Countdown(name, dbobj.getAsOrElse[DateTime]("date", new DateTime())))
   }
 }
 //object CMain extends App{

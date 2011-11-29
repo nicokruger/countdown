@@ -4,6 +4,7 @@ import co.za.countdown.serve.ServeCountdowns
 import co.za.countdown.source.GamesWebScrape
 import org.joda.time.DateTime
 import co.za.countdown.counter.CountdownService
+import co.za.countdown.Countdown
 
 /**
  * User: dawid
@@ -12,6 +13,6 @@ import co.za.countdown.counter.CountdownService
  */
 
 object TestStartup extends App{
-  GamesWebScrape.getOnline foreach ( (countDown: (String, DateTime)) => CountdownService.upsertCountdown(countDown) )
+  GamesWebScrape.getOnline foreach ( (countDown: Countdown) => CountdownService.upsertCountdown(countDown) )
   unfiltered.jetty.Http(55555).filter(ServeCountdowns.countdowns).run()
 }

@@ -8,6 +8,7 @@ import java.io.InputStream
 import org.joda.time.format.DateTimeFormat
 import collection.mutable.ListBuffer
 import org.joda.time.{DateTime, LocalDate}
+import co.za.countdown.Countdown
 
 /**
  * User: dawidmalan
@@ -32,9 +33,9 @@ object GamesWebScrape {
     parseDates(adapter.loadXML(source, parser))
   }
 
-  def parseDates(node: Node): List[(String, DateTime)] = {
+  def parseDates(node: Node): List[Countdown] = {
     var currentYM: Option[DateTime] = None
-    val items = new ListBuffer[(String, DateTime)]
+    val items = new ListBuffer[Countdown]
 
     val usable = ((node \\ "table").drop(2) \ "tr") dropWhile ((tr: Node) => parseYM((tr \ "td").head).isEmpty)
 
@@ -43,7 +44,7 @@ object GamesWebScrape {
         currentYM = parseYM(n \ "td")
       }
       else parseItem(n, currentYM) foreach {
-        item: (String, DateTime) => items.append(item)
+        item: Countdown => items.append(item)
       }
     })
     items.toList
@@ -59,16 +60,16 @@ object GamesWebScrape {
     }
   }
 
-  def parseItem(n: NodeSeq, ymo: Option[DateTime]): Option[(String, DateTime)] = {
+  def parseItem(n: NodeSeq, ymo: Option[DateTime]): Option[Countdown] = {
     val cols = (n \ "td").map(_.text).toList
     ymo match {
       case Some(ym) => {
         val title = cols(0).replaceAll("""[\s ]{2,}""", " ")
         try {
           val dayMonth = dayMonthFormat.parseDateTime(cols(6)).dayOfMonth()
-          Some( title -> ym.withDayOfMonth(dayMonth.get()))
+          Some( Countdown(title, ym.withDayOfMonth(dayMonth.get())))
         } catch {
-          case e: Exception => Some( title -> ym)
+          case e: Exception => Some( Countdown(title, ym))
         }
       }
       case _ => None
