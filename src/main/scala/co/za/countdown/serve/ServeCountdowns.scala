@@ -26,20 +26,17 @@ object ServeCountdowns {
     case GET(Path(Seg("countdown" :: q :: Nil))) => {
 
       CountdownService.retrieveById(new ObjectId(q)) match {
-
         case Some(item: Countdown) => {
-          JsonContent ~> ResponseString(write(MillisCountdown(item))) ~>
-            ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
+          JsonContent ~> ResponseString(write(MillisCountdown(item)))
         }
-        case None =>  JsonContent ~> ResponseString(compact(render("error" -> "No countdown found for " + q))) ~>
-          ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
+        case None =>  JsonContent ~> ResponseString(compact(render("error" -> "No countdown found for " + q)))
       }
     }
     case GET(Path(Seg("countdownlist" :: Nil))) => {
       JsonContent ~> ResponseString(compact(render("countdowns" -> CountdownService.retrieveAll.map(
-        (cd:Countdown) => ( ("label" -> cd.name) ~ ("url" -> cd.url) ) )))) ~> ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
+        (cd:Countdown) => ( ("label" -> cd.name) ~ ("url" -> cd.url) ) ))))
     }
-    case _ => JsonContent ~> ResponseString(compact(render("error" -> "Invalid request"))) ~> ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
+    case _ => JsonContent ~> ResponseString(compact(render("error" -> "Invalid request")))
   }
 }
 
