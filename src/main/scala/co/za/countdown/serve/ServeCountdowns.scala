@@ -11,6 +11,7 @@ import org.joda.time.DateTime
 import co.za.countdown.Countdown
 import java.net.URL
 import org.bson.types.ObjectId
+import unfiltered.response.ResponseHeader._
 
 /**
  * User: dawid
@@ -27,15 +28,18 @@ object ServeCountdowns {
       CountdownService.retrieveById(new ObjectId(q)) match {
 
         case Some(item: Countdown) => {
-          JsonContent ~> ResponseString(write(MillisCountdown(item)))
+          JsonContent ~> ResponseString(write(MillisCountdown(item))) ~>
+            ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
         }
-        case None => ResponseString("No countdown found for " + q)
+        case None =>  JsonContent ~> ResponseString(compact(render("error" -> "No countdown found for " + q))) ~>
+          ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
       }
     }
     case GET(Path(Seg("countdownlist" :: Nil))) => {
-      JsonContent ~> ResponseString(compact(render("countdowns" -> CountdownService.retrieveAll.map( (cd:Countdown) => ( ("label" -> cd.name) ~ ("url" -> cd.url) ) ))))
+      JsonContent ~> ResponseString(compact(render("countdowns" -> CountdownService.retrieveAll.map(
+        (cd:Countdown) => ( ("label" -> cd.name) ~ ("url" -> cd.url) ) )))) ~> ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
     }
-    case _ => JsonContent ~> ResponseString(compact(render("error" -> "Invalid request")))
+    case _ => JsonContent ~> ResponseString(compact(render("error" -> "Invalid request"))) ~> ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
   }
 }
 
