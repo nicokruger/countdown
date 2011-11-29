@@ -8,8 +8,12 @@ To run:
 3. run TestStartup
 
 This will read some release date for games, persist it to mongo and start a jetty service.
-access via http://localhost:55555/countdown/{a game's name}
-It should display something like: 
-	Countdown for: XCOM 13543134 millis left before release
 
-That's all I have for now, have fun!
+Calling http://localhost:55555/countdownlist should give something like:
+{"countdowns":[{"label":"Kingdoms of Amalur: Reckoning","url":"4ed54653a8b6be639489b0ac"},{"label":"Another World","url":"4ed54653a8b6be639489b0ad"},{"label":"Syndicate Executive Package","url":"4ed54653a8b6be639489b0ae"}]}
+
+To access a countdown, use one of the urls, like: http://localhost:55555/countdown/4ed54653a8b6be639489b0ad
+It should display something like: 
+
+{"name":"Another World","url":"4ed54653a8b6be639489b0ad","eventDate":1328047200000}
+
