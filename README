@@ -1,0 +1,15 @@
+Initial Countdown server
+
+To run:
+
+1. Get sbt 0.11.0
+2. Install MongoDB
+2. Run sbt, update and compile
+3. run TestStartup
+
+This will read some release date for games, persist it to mongo and start a jetty service.
+access via http://localhost:55555/countdown/{a game's name}
+It should display something like: 
+	Countdown for: XCOM 13543134 millis left before release
+
+That's all I have for now, have fun!

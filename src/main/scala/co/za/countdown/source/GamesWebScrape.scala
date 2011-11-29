@@ -75,6 +75,6 @@ object GamesWebScrape {
     }
   }
 }
-object Main extends App{
-     GamesWebScrape.getOnline foreach(println)
-}
+//object Main extends App{
+//     GamesWebScrape.getOnline foreach(println)
+//}
