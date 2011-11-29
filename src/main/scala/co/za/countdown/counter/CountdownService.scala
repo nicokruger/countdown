@@ -21,30 +21,39 @@ object CountdownService {
   val mongo = MongoConnection()
   val coll = mongo("countDownDB")("countdown")
 
+  val eventDateField = "eventDate"
+  val nameField = "name"
+
+  val defaultName = "Unnamed"
+
   def upsertCountdown( countdown: (String, DateTime)) = {
-    coll.update(MongoDBObject("name" -> countdown._1), MongoDBObject("name" -> countdown._1, "date" -> countdown._2),true, false)
+    coll.update(MongoDBObject(nameField -> countdown._1), MongoDBObject(nameField -> countdown._1, eventDateField -> countdown._2),true, false)
   }
 
   def retrieveAll: Iterable[Countdown] = {
-    for { x <- coll}
-      yield Countdown(x.getAsOrElse[String]("name", "Unnamed"),
-      x.getAsOrElse[ObjectId]("_id", new ObjectId()).toString,
-      x.getAsOrElse[DateTime]("eventDate", new DateTime()))
+    for { dbobj <- coll}
+      yield Countdown(name(dbobj),
+      idAsString(dbobj),
+      eventDate(dbobj))
   }
 
   def retrieveByName(name:String) : Option[Countdown] = {
-     coll.findOne( MongoDBObject("name" -> name) ).map( (dbobj:DBObject) =>
+     coll.findOne( MongoDBObject(nameField -> name) ).map( (dbobj:DBObject) =>
        Countdown(name,
-         dbobj.getAsOrElse[ObjectId]("_id", new ObjectId()).toString,
-         dbobj.getAsOrElse[DateTime]("date", new DateTime())))
+         idAsString(dbobj),
+         eventDate(dbobj)))
   }
 
   def retrieveById(id:ObjectId) : Option[Countdown] = {
      coll.findOne( MongoDBObject("_id" -> id) ).map( (dbobj:DBObject) =>
-       Countdown(dbobj.getAsOrElse[String]("name", "Unnamed"),
-         dbobj.getAsOrElse[ObjectId]("_id", new ObjectId()).toString,
-         dbobj.getAsOrElse[DateTime]("date", new DateTime())))
+       Countdown(name(dbobj),
+         idAsString(dbobj),
+         eventDate(dbobj)))
   }
+
+  private def idAsString(dbobj:DBObject) = dbobj.getAsOrElse[ObjectId]("_id", new ObjectId()).toString
+  private def eventDate(dbobj: DBObject) = dbobj.getAsOrElse[DateTime](eventDateField, new DateTime())
+  private def name(dbobj: DBObject) = dbobj.getAsOrElse[String](nameField, defaultName)
 }
 //object CMain extends App{
 //  CountdownService.upsertCountdown( ("test item", new DateTime()))
