@@ -48,7 +48,7 @@ object CountdownService {
 
     val orTuples = (tagTuples ++ labelTuple)
 
-    val q: DBObject = $or(orTuples: _*)
+    val q: DBObject = if(orTuples.isEmpty) MongoDBObject() else $or(orTuples: _*)
 
     val results = coll.find(q) map countdownFromDB
 
