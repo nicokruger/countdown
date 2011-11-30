@@ -5,9 +5,9 @@ import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.MongoConnection
 import com.mongodb.casbah.commons.conversions.scala._
 import co.za.countdown.Countdown._
-import co.za.countdown.Countdown
 import org.joda.time.{DateTime, LocalDate}
 import org.bson.types.ObjectId
+import co.za.countdown.{AspiringCountdown, Countdown}
 
 /**
  * User: dawid
@@ -23,38 +23,71 @@ object CountdownService {
 
   val eventDateField = "eventDate"
   val nameField = "name"
+  val tagsField = "tags"
 
   val defaultName = "Unnamed"
 
-  def upsertCountdown( countdown: (String, DateTime)) = {
-    coll.update(MongoDBObject(nameField -> countdown._1), MongoDBObject(nameField -> countdown._1, eventDateField -> countdown._2),true, false)
+  def upsertCountdown(countdown: AspiringCountdown) = {
+    coll.update(MongoDBObject(nameField -> countdown.name),
+      dbObjFromAspiring(countdown), true, false)
+  }
+
+  def insertCountdown(countdown: AspiringCountdown): Option[Countdown] = {
+    coll += dbObjFromAspiring(countdown)
+    searchBy(countdown).toList.headOption
+  }
+
+  def searchBy(countdown: AspiringCountdown) = {
+    coll.find(dbObjFromAspiring(countdown)).map(countdownFromDB)
+  }
+
+  def search(label: Option[String], start: Option[Long], end: Option[Long], tags: List[String]) = {
+
+    val tagTuples = tags.map((s: String) => tagsField -> s).toList
+    val labelTuple = label.map(nameField -> _).toList
+
+    val orTuples = (tagTuples ++ labelTuple)
+
+    val q: DBObject = $or(orTuples: _*)
+
+    coll.find(q) map countdownFromDB
   }
 
   def retrieveAll: Iterable[Countdown] = {
-    for { dbobj <- coll}
-      yield Countdown(name(dbobj),
-      idAsString(dbobj),
-      eventDate(dbobj))
+    for {dbobj <- coll}
+    yield countdownFromDB(dbobj)
   }
 
-  def retrieveByName(name:String) : Option[Countdown] = {
-     coll.findOne( MongoDBObject(nameField -> name) ).map( (dbobj:DBObject) =>
-       Countdown(name,
-         idAsString(dbobj),
-         eventDate(dbobj)))
+  def retrieveByName(name: String): Option[Countdown] = {
+    coll.findOne(MongoDBObject(nameField -> name)).map(countdownFromDB)
   }
 
-  def retrieveById(id:ObjectId) : Option[Countdown] = {
-     coll.findOne( MongoDBObject("_id" -> id) ).map( (dbobj:DBObject) =>
-       Countdown(name(dbobj),
-         idAsString(dbobj),
-         eventDate(dbobj)))
+  def retrieveById(id: ObjectId): Option[Countdown] = {
+    coll.findOne(MongoDBObject("_id" -> id)).map(countdownFromDB)
   }
 
-  private def idAsString(dbobj:DBObject) = dbobj.getAsOrElse[ObjectId]("_id", new ObjectId()).toString
+
+  private def dbObjFromAspiring(countdown: AspiringCountdown) =
+    MongoDBObject(nameField -> countdown.name, eventDateField -> countdown.eventDate, tagsField -> countdown.tags)
+
+  private def countdownFromDB(dbobj: DBObject) = Countdown(name(dbobj),
+    idAsString(dbobj),
+    eventDate(dbobj),
+    tags(dbobj))
+
+  private def idAsString(dbobj: DBObject) = dbobj.getAsOrElse[ObjectId]("_id", new ObjectId()).toString
+
   private def eventDate(dbobj: DBObject) = dbobj.getAsOrElse[DateTime](eventDateField, new DateTime())
+
   private def name(dbobj: DBObject) = dbobj.getAsOrElse[String](nameField, defaultName)
+
+  private def tags(dbobj: DBObject): List[String] = {
+    dbobj.getAsOrElse[BasicDBList](tagsField, MongoDBList()).toList collect {
+      case s: String => s
+    }
+  }
 }
+
 //object CMain extends App{
 //  CountdownService.upsertCountdown( ("test item", new DateTime()))
 //}

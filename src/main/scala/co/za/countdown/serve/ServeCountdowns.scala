@@ -8,10 +8,11 @@ import net.liftweb.json.Serialization.{read, write}
 import net.liftweb.json.JsonDSL._
 import co.za.countdown.counter.CountdownService
 import org.joda.time.DateTime
-import co.za.countdown.Countdown
 import java.net.URL
 import org.bson.types.ObjectId
 import unfiltered.response.ResponseHeader._
+import co.za.countdown._
+
 
 /**
  * User: dawid
@@ -21,30 +22,54 @@ import unfiltered.response.ResponseHeader._
 
 object ServeCountdowns {
   implicit val formats = Serialization.formats(NoTypeHints)
+  def errorResponse(msg: String) = JsonContent ~> ResponseString(compact(render("error" -> msg)))
+  val searchResultMap = (cd:Countdown) => ( ("label" -> cd.name) ~ ("url" -> cd.url) )
 
   val countdowns = unfiltered.filter.Planify {
+    //http://localhost:55555/countdown/new?label=toffie&eventDate=1332194400000&tags=appel,peer
+    case Path("countdown/new")  & Params(params)  => {
+        val label = params.getOrElse("label",Nil).headOption
+       val eventMillis = params.getOrElse("eventDate", Nil).map(_.toLong).headOption
+       val tags = params.getOrElse("tags", Nil).flatMap(_.split(","))
+
+      (label, eventMillis, tags) match {
+        case (Some(label:String), Some(eventMillis:Long), tags: List[String] ) => {
+          CountdownService.insertCountdown(AspiringCountdown(label, new DateTime(eventMillis.toLong), tags)) match {
+            case Some(c:Countdown) =>  JsonContent ~> ResponseString(write(MillisCountdown(c)))
+            case _ => errorResponse("Could not persist")
+          }
+        }
+        case _ => errorResponse("your params are broken")
+      }
+    }
+    case Path(Seg("countdown" :: "search" :: Nil)) & Params(params) => {
+
+       val label = params.getOrElse("label",Nil).headOption
+       val startMillis = params.getOrElse("start", Nil).map(_.toLong).headOption
+       val endMillis = params.getOrElse("end", Nil).map(_.toLong).headOption
+       val tags = params.getOrElse("tags", Nil).flatMap(_.split(",")).toList
+
+       val results = CountdownService.search(label, startMillis, endMillis, tags).map(searchResultMap ).toList
+      JsonContent ~> ResponseString(compact(render("countdowns" -> results)))
+    }
     case GET(Path(Seg("countdown" :: q :: Nil))) => {
 
       CountdownService.retrieveById(new ObjectId(q)) match {
         case Some(item: Countdown) => {
           JsonContent ~> ResponseString(write(MillisCountdown(item)))
         }
-        case None =>  JsonContent ~> ResponseString(compact(render("error" -> "No countdown found for " + q)))
+        case None =>  errorResponse("Countdown was not found ")
       }
     }
     case GET(Path(Seg("countdownlist" :: Nil))) => {
       JsonContent ~> ResponseString(compact(render("countdowns" -> CountdownService.retrieveAll.map(
-        (cd:Countdown) => ( ("label" -> cd.name) ~ ("url" -> cd.url) ) ))))
+        searchResultMap ))))
     }
-    case _ => JsonContent ~> ResponseString(compact(render("error" -> "Invalid request")))
+
+    case _ =>  errorResponse("Invalid request")
   }
 }
 
-//temp workaround
-case class MillisCountdown(name: String, url: String,  eventDate: Long)
 
-object MillisCountdown {
-  def apply(countdown: Countdown):MillisCountdown = MillisCountdown(countdown.name, countdown.url, countdown.eventDate.getMillis)
-}
 
 

@@ -7,6 +7,7 @@ organization := "za.co.countdown"
 scalaVersion := "2.9.1"
 
 libraryDependencies ++= Seq(
+  "ch.qos.logback" % "logback-classic" % "1.0.0",
   "com.mongodb.casbah" %% "casbah" % "2.1.5-1",
   "joda-time" % "joda-time" % "1.6.2",
   "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1",
