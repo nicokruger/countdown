@@ -58,9 +58,9 @@ object CountdownService {
     })
   }
 
-  def retrieveAll: Iterable[Countdown] = {
-    for {dbobj <- coll}
-    yield countdownFromDB(dbobj)
+  def retrieveAll: List[Countdown] = {
+    (for {dbobj <- coll}
+    yield countdownFromDB(dbobj)).toList
   }
 
   def retrieveByName(name: String): Option[Countdown] = {
