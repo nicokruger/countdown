@@ -5,9 +5,9 @@ import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.MongoConnection
 import com.mongodb.casbah.commons.conversions.scala._
 import co.za.countdown.Countdown._
-import org.joda.time.{DateTime, LocalDate}
 import org.bson.types.ObjectId
 import co.za.countdown.{AspiringCountdown, Countdown}
+import org.joda.time.{DateTime, LocalDate}
 
 /**
  * User: dawid
@@ -50,7 +50,12 @@ object CountdownService {
 
     val q: DBObject = $or(orTuples: _*)
 
-    coll.find(q) map countdownFromDB
+    val results = coll.find(q) map countdownFromDB
+
+    results.filter((countdown: Countdown) => {
+      (start.isEmpty || (countdown.eventDate.compareTo(new DateTime(start.get)) >= 0)) &&
+        (end.isEmpty || (countdown.eventDate.compareTo(new DateTime(end.get)) <= 0))
+    })
   }
 
   def retrieveAll: Iterable[Countdown] = {
