@@ -1,7 +1,7 @@
 $(function () {
     // Retrieve inital list of countdowns
     $.ajax({
-        url: "http://localhost:55555/countdownlist",
+        url: "/countdownlist",
         dataType: "json",
         success: function (o) {
             $("#countdownlist").html(""); // clear
@@ -11,7 +11,7 @@ $(function () {
                 $("#countdownlist").append("<div  id=\"" + countdownInfo.url + "\">Retriving data....</div>");
                 
                 $.ajax({
-                    url: "http://localhost:55555/countdown/" + countdownInfo.url,
+                    url: "/countdown/" + countdownInfo.url,
                     dataType: "json",
                     success: function (c) {
                         $("#" + countdownInfo.url).html(""); // clear
