@@ -8,11 +8,6 @@ var convertTime = function (now_millis, then_millis) {
     var now = new Date(now_millis);
     var then = new Date(then_millis);
     
-    var pad = function (num, pads) {
-        var s = ''+num;
-        return s.length == pads ? ''+num : _(_.range(pads - s.length)).map(function() { return "0" }).join('') + num;
-    };
-    
     var diff = then.getTime() - now.getTime();
     var days = Math.floor(diff / DAY);
     var hours = Math.floor( (diff - DAY*days) / HOUR );
@@ -20,9 +15,9 @@ var convertTime = function (now_millis, then_millis) {
     var seconds = Math.floor( (diff - DAY*days - hours*HOUR - minutes*MINUTE) / SECOND);
     
     return {
-        days: pad(days, 3),
-        hours: pad(hours, 2),
-        minutes: pad(minutes, 2),
-        seconds: pad(seconds, 2)
+        days: days,
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds
     }
 }

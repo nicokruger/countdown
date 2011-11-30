@@ -3,8 +3,14 @@ var led = function(canvas) {
     // ctx will never change - get it once and save it in the closure
     var ctx = canvas.getContext("2d");
     
+    // holds the previous value for this LED
+    var prevValue = undefined;
+    
     return function (num) {
         
+        if (num === prevValue) {
+            return; // don't do anything, it's not necessary to redraw
+        }
         // the canvas could be resized, so we need to retrieve width/height
         // on each char draw
         var w = $(canvas).width();
@@ -37,6 +43,7 @@ var led = function(canvas) {
         
         });
         
+        prevValue = num;
     }   
 };
 
