@@ -26,6 +26,10 @@ object ServeCountdowns {
   val searchResultMap = (cd:Countdown) => ( ("label" -> cd.name) ~ ("url" -> cd.url) )
 
   val countdowns = unfiltered.filter.Planify {
+    case GET(Path(Seg("countdown" :: "random" :: Nil))) => {
+       val all = CountdownService.retrieveAll
+     JsonContent ~> ResponseString(write(MillisCountdown(all( (math.random * (all.length - 1)).toInt))))
+    }
     //http://localhost:55555/countdown/new?label=toffie&eventDate=1332194400000&tags=appel,peer
     case Path("countdown/new")  & Params(params)  => {
         val label = params.getOrElse("label",Nil).headOption
