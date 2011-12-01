@@ -41,12 +41,12 @@ object CountdownService {
     coll.find(dbObjFromAspiring(countdown)).map(countdownFromDB)
   }
 
-  def search(label: Option[String], start: Option[Long], end: Option[Long], tags: List[String]) = {
+  def search(name: Option[String], start: Option[Long], end: Option[Long], tags: List[String]) = {
 
     val tagTuples = tags.map((s: String) => tagsField -> s).toList
-    val labelTuple = label.map(nameField -> _).toList
+    val nameTuple = name.map(nameField -> _).toList
 
-    val orTuples = (tagTuples ++ labelTuple)
+    val orTuples = (tagTuples ++ nameTuple)
 
     val q: DBObject = if(orTuples.isEmpty) MongoDBObject() else $or(orTuples: _*)
 
