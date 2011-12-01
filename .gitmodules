@@ -1,0 +1,6 @@
+[submodule "src/main/resources/static/timo"]
+	path = src/main/resources/static/timo
+	url = git@github.com:nicokruger/timo-js
+[submodule "src/main/resources/static/vendor"]
+	path = src/main/resources/static/vendor
+	url = git@github.com:nicokruger/common-js-libs
