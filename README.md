@@ -2,6 +2,14 @@ Initial Countdown server
 -----------------------
 A project to manage countdown timers on the web. Users can view timers that are collected all across the web, and can also add their own timers and share it with friends.
 
+Cloning
+-------
+Now that we have a submodule, the cloning is no longer a one command operation. Please remember that after cloning, you need to:
+
+       git submodule init
+       git submodule update
+
+If we find these submodules create too much headaches for us then we can discuss and remove it.
 
 Running
 -------
