@@ -31,14 +31,14 @@ object ServeCountdowns {
      JsonContent ~> ResponseString(write(MillisCountdown(all( (math.random * (all.length - 1)).toInt))))
     }
     //http://localhost:55555/countdown/new?label=toffie&eventDate=1332194400000&tags=appel,peer
-    case Path("countdown/new")  & Params(params)  => {
+    case Path(Seg("countdown" ::"new" :: Nil))  & Params(params)  => {
         val label = params.getOrElse("label",Nil).headOption
        val eventMillis = params.getOrElse("eventDate", Nil).map(_.toLong).headOption
-       val tags = params.getOrElse("tags", Nil).flatMap(_.split(","))
-
+       val tags = params.getOrElse("tags", Nil).headOption
+       println("HERE ARE THE PARAMS "+label+ " e "+eventMillis +" tags "+tags)
       (label, eventMillis, tags) match {
-        case (Some(label:String), Some(eventMillis:Long), tags: List[String] ) => {
-          CountdownService.insertCountdown(AspiringCountdown(label, new DateTime(eventMillis.toLong), tags)) match {
+        case (Some(label:String), Some(eventMillis:Long), Some(tags: String) ) => {
+          CountdownService.insertCountdown(AspiringCountdown(label, new DateTime(eventMillis.toLong), tags.split(",").toList )) match {
             case Some(c:Countdown) =>  JsonContent ~> ResponseString(write(MillisCountdown(c)))
             case _ => errorResponse("Could not persist")
           }
