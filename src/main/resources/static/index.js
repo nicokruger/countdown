@@ -34,7 +34,7 @@ var retrieveAll = function () {
 };
 
 var ledColors = {
-    lit: "rgba(0, 112, 60, 1.0)",
+    lit: "rgba(0, 0, 0, 1.0)",
     unlit: "rgba(0, 0, 0, 0.0)",
     outline: "rgba(0, 0, 0, 0.0)"
 }
