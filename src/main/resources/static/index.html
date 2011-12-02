@@ -2,8 +2,12 @@
 <html>
 
 <head>
-    <title>Countdown.er</title>
+    <title>Waitfor</title>
+    <meta charset=utf-8 /> 
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0" />
     
+    <link rel="stylesheet"  href="vendor/jquery.mobile.css" />
+
     <!-- vendor scripts -->
     <script src="vendor/jquery-1.6.2.min.js"></script>
     <script src="vendor/underscore.js"></script>
@@ -16,6 +20,9 @@
 
     <!-- main script -->
     <script src="index.js"></script>
+    <script src="new.js"></script>
+    <script src="search.js"></script>
+    <script src="other.js"></script>
     
     <style type="text/css">
         .seperator {
@@ -24,12 +31,101 @@
             margin-right:5px;
         }
     </style>
+    
+    <script src="vendor/jquery.mobile.min.js"></script>
+
 </head>
 
 <body>
-<div id="countdownlist">
-Loading...
+
+<div data-role="page" id="mainview">
+
+    <div data-role="header">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#newcountdown" data-icon="plus">New</a></li>
+                <li><a href="#searchcountdowns" data-icon="search">Search</a></li>
+                <li><a id="random" data-icon="star">Random</a></li>
+                <li><a id="all" data-icon="refresh">All</a></li>
+                <li><a id="clear" data-icon="delete">Clear</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-item">
+        <ul data-role="listview" data-inset="true" id="countdownlist">
+        </ul>
+    </div>
+    
 </div>
+
+<div data-role="page" id="newcountdown">
+    <div data-role="header">
+        <h1>Add countdown</h1>
+    </div>
+    
+    <div data-role="content">
+        <form id="newcountdownForm" data-ajax="false">
+        
+            <div data-role="fieldcontain">
+                <label for="name">Name:</label>
+                <input required autofocus type="text" name="name" id="countdownName" value="" />
+            </div>
+            
+            <div data-role="fieldcontain">
+                <label for="tags">Tags:</label>
+                <input autofocus type="text" name="tags" id="countdownTags" value="" />
+            </div>
+            
+            <div data-role="fieldcontain">
+                <label for="tags">When:</label>
+                <input required type="datetime-local" name="datetime" id="countdownDatetime" value="" />
+            </div>
+            
+            <a data-role="button" data-inline="true" data-icon="back" href="#mainview">Back</a>
+            <button type="submit" data-inline="true" data-icon="plus">Add countdown</a>
+            
+        </form> 
+        
+    </div>
+</div>
+
+<div data-role="page" id="searchcountdowns">
+    <div data-role="header">
+        <h1>Search countdowns</h1>
+    </div>
+    
+    <div data-role="content">
+        <form id="searchForm" data-ajax="false">
+        
+            <div data-role="fieldcontain">
+                <label for="name">Name:</label>
+                <input autofocus type="text" name="name" id="searchName" value="" />
+            </div>
+            
+            <div data-role="fieldcontain">
+                <label for="tags">Tags:</label>
+                <input autofocus type="text" name="tags" id="searchTags" value="" />
+            </div>
+            
+            <div data-role="fieldcontain">
+                <label for="tags">Range start:</label>
+                <input type="datetime-local" name="datetime" id="searchRangeStart" value="" />
+            </div>
+            
+            <div data-role="fieldcontain">
+                <label for="tags">Range end:</label>
+                <input type="datetime-local" name="datetime" id="searchRangeEnd" value="" />
+            </div>
+            
+            <a data-role="button" data-inline="true" data-icon="back" href="#mainview">Back</a>
+            <button type="submit" data-inline="true" data-icon="search">Search</a>
+            
+        </form> 
+        
+    </div>
+</div>
+
 </body>
 
 

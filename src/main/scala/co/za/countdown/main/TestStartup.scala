@@ -17,6 +17,6 @@ object TestStartup extends App {
     .context("/static") {
       (builder: ContextBuilder) => builder.resources(new URL(getClass.getResource("/static/"), "."))}
     .context("/filesystem") {
-      (builder: ContextBuilder) => builder.resources(new URL(new File("/tmp/filesystem/").toURI.toURL, "."))}
+      (builder: ContextBuilder) => builder.resources(new URL(new File("src/main/resources/static").toURI.toURL, "."))}
     .filter(ServeCountdowns.countdowns).run()
 }
