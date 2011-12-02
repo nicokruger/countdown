@@ -11,8 +11,8 @@ $(document).bind("mobileinit", function () {
             try {
                 $("#searchName").val() !== "" ? data.name = $("#searchName").val() : data=data;
                 $("#searchTags").val() !== "" ? data.tags = $("#searchTags").val() : data=data;
-                $("#searchRangeStart").val() !== "" ? data.startMillis = Date.parse($("#searchRangeStart").val()) : data=data;
-                $("#searchRangeEnd").val() !== "" ? data.endMillis = Date.parse($("#searchRangeEnd").val()) : data=data;
+                $("#searchRangeStart").val() !== "" ? data.start = Date.parse($("#searchRangeStart").val()) : data=data;
+                $("#searchRangeEnd").val() !== "" ? data.end = Date.parse($("#searchRangeEnd").val()) : data=data;
             } catch (err) {
                 alert("cannot parse date: " + err);
                 return;
