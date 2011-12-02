@@ -65,7 +65,7 @@ model.putCountdown = function (c) {
     if (where === undefined) {
         outside = $('<li></li>').appendTo("#countdownlist");
     } else {
-        outside = $("<li></li>").insertBefore($("#" + where).parent());
+        outside = $('<li></li>').insertBefore($("#" + where).parent());
     }
     $(outside).append("<h5>" + c.name + "</h5>");
     $(outside).append("<div id=\"" + c.url + "\"></div>");
