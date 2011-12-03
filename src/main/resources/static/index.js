@@ -2,9 +2,9 @@ $(document).bind("mobileinit", function () {
     
     $.mobile.defaultPageTransition = "none";
 
-    var controller = controllers(model());
     
     $(function () {
+        var controller = controllers(model($("#countdownlist")));
         
         $("#newcountdownForm").bind("submit", controller.newCountdown);
         

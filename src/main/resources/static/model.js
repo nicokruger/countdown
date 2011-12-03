@@ -4,11 +4,11 @@ var ledColors = {
     outline: "rgba(0, 0, 0, 0.0)"
 }
 
-var model = function () {
-    
-    var countdowns = [];
+var model = function (countdownHolder) {
     
     return {
+        
+        countdowns: [],
         
         find: function (countdownInfo) {
             if (this.countdowns.length == 0) {
@@ -18,7 +18,7 @@ var model = function () {
             var sortFunc = function (x) { return x.eventDate; };
             var i = _(this.countdowns).sortedIndex(countdownInfo, sortFunc);
             
-            return i < this.countdowns.length ? this.countdowns[i].url : undefined;
+            return i < this.countdowns.length ? i : undefined;
         },
         
         putCountdown: function (c) {
@@ -28,18 +28,18 @@ var model = function () {
             var outside;
             
             if (where === undefined) {
-                outside = $('<li></li>').appendTo("#countdownlist");
+                outside = $('<li></li>').appendTo(countdownHolder);
                 this.countdowns.push(c);
             } else {
-                outside = $('<li></li>').insertBefore($("#" + where).parent());
+                outside = $('<li></li>').insertBefore($(countdownHolder).find("#" + this.countdowns[where].url).parent());
                 this.countdowns.splice(where, 0, c);
             }
             $(outside).append("<h5>" + c.name + "</h5>");
-            $(outside).append("<div id=\"" + c.url + "\"></div>");
+            $(outside).append("<div class=\"countdown\" id=\"" + c.url + "\"></div>");
             
-            countdown($("#" + c.url), c.eventDate, 24, 32, ledColors);
+            countdown($(outside).find("#" + c.url), c.eventDate, 24, 32, ledColors);
             
-            $("#countdownlist").listview("refresh");
+            _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
 
             return $(outside);
         },
@@ -57,14 +57,10 @@ var model = function () {
         
         clear: function () {
             this.countdowns = [];
-            $("#countdownlist").html(""); // clear
+            countdownHolder.html(""); // clear
         }
 
     }
-    
-    
-
-
 
 }
 
