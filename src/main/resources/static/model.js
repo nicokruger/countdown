@@ -21,7 +21,15 @@ var model = function (countdownHolder) {
             return i < this.countdowns.length ? i : undefined;
         },
         
+        // adds a countdown, and refreshes the view
         putCountdown: function (c) {
+            this._putCountdown(c);
+            
+            _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
+        },
+        
+        //ads a countdown, does not refresh the view
+        _putCountdown: function (c) {
             
             var where = this.find(c);
             
@@ -39,17 +47,37 @@ var model = function (countdownHolder) {
             
             countdown($(outside).find("#" + c.url), c.eventDate, 24, 32, ledColors);
             
-            _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
 
             return $(outside);
         },
         
+        pending: 0,
+        
         getCountdown: function (countdownInfo) {
+            
+            $.mobile.showPageLoadingMsg();
+            $(countdownHolder).hide();
+            this.pending += 1;
+            var that = this;
             $.ajax({
                 url: "/countdown/" + countdownInfo.url,
                 dataType: "json",
-                success: _.bind(this.putCountdown, this),
+                success: function (o) {
+                    that._putCountdown(o);
+                    that.pending -= 1;
+                    if (that.pending == 0) {
+                        $(countdownHolder).show();
+                        $.mobile.hidePageLoadingMsg();
+                        _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
+                    }
+                },
                 error: function (o) {
+                    this.pending -= 1;
+                    if (that.pending == 0) {
+                        $(countdownHolder).show();
+                        $.mobile.hidePageLoadingMsg();
+                        _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
+                    }
                     // TODO: handle the error
                 }
             });
