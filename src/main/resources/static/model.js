@@ -23,16 +23,14 @@ var model = function (countdownHolder) {
         
         // adds a countdown, and refreshes the view
         putCountdown: function (c) {
-            this._putCountdown(c);
-            
+            var o = this._putCountdown(c);
             _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
+            return o;
         },
         
         //ads a countdown, does not refresh the view
         _putCountdown: function (c) {
-            
             var where = this.find(c);
-            
             var outside;
             
             if (where === undefined) {
@@ -47,7 +45,6 @@ var model = function (countdownHolder) {
             
             countdown($(outside).find("#" + c.url), c.eventDate, 24, 32, ledColors);
             
-
             return $(outside);
         },
         
@@ -56,7 +53,7 @@ var model = function (countdownHolder) {
         getCountdown: function (countdownInfo) {
             
             $.mobile.showPageLoadingMsg();
-            $(countdownHolder).hide();
+            
             this.pending += 1;
             var that = this;
             $.ajax({
@@ -66,17 +63,16 @@ var model = function (countdownHolder) {
                     that._putCountdown(o);
                     that.pending -= 1;
                     if (that.pending == 0) {
-                        $(countdownHolder).show();
-                        $.mobile.hidePageLoadingMsg();
                         _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
-                    }
+                        $.mobile.hidePageLoadingMsg();
+                    } 
                 },
                 error: function (o) {
-                    this.pending -= 1;
+                    that.pending -= 1;
                     if (that.pending == 0) {
+                        _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
                         $(countdownHolder).show();
                         $.mobile.hidePageLoadingMsg();
-                        _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
                     }
                     // TODO: handle the error
                 }
