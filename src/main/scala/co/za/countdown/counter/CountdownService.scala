@@ -44,7 +44,10 @@ object CountdownService {
   def search(name: Option[String], start: Option[Long], end: Option[Long], tags: List[String]) = {
 
     val tagTuples = tags.map((s: String) => tagsField -> s).toList
-    val nameTuple = name.map(nameField -> _).toList
+    val nameTuple = name.map( (s:String) => {
+      val queryString = s.split("[\\s\\,]").foldLeft(new StringBuilder("(?i).*"))( (builder:StringBuilder, b:String) => builder.append(".*").append(b) )
+      nameField -> ( queryString.r)
+    }).toList
 
     val orTuples = (tagTuples ++ nameTuple)
 
