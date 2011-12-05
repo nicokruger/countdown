@@ -21,6 +21,16 @@ var model = function (countdownHolder) {
             return i < this.countdowns.length ? i : undefined;
         },
         
+        putCountdowns: function (countdowns) {
+            $.mobile.showPageLoadingMsg();
+            var that = this;
+            _(countdowns).each(function (countdown) {
+                that._putCountdown(countdown);
+            });
+            $.mobile.hidePageLoadingMsg();
+            _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
+        },
+        
         // adds a countdown, and refreshes the view
         putCountdown: function (c) {
             var o = this._putCountdown(c);

@@ -11,17 +11,11 @@ var controllers = function (model) {
                 url: "/countdownlist",
                 dataType: "json",
                 success: function (o) {
-                    
-                    $.mobile.hidePageLoadingMsg();
-                    
                     model.clear();
-                    // iterate through countdowns
-                   _(o.countdowns).each(function (countdownInfo) {
-                       model.getCountdown(countdownInfo);
-                    });           
-                    
+                    model.putCountdowns(o.countdowns);
                 },
                 error: function (o) {
+                    $.mobile.hidePageLoadingMsg();
                     alert("error retrieving data");
                 }
             });
@@ -51,16 +45,13 @@ var controllers = function (model) {
                 data: data,
                 type: "POST",
                 success: function (o) {
-                        $.mobile.hidePageLoadingMsg();
-                        
-                        $.mobile.changePage($("#mainview"), "none");
+                    $.mobile.changePage($("#mainview"), "none");
+                    var n = model.putCountdown(o, true);
+                    $.mobile.hidePageLoadingMsg();
+                    // the following could also be "position"
+                    _.defer(function () { $.mobile.silentScroll($(n).offset().top); } );
                     
-                        var n = model.putCountdown(o, true);
-                    
-                        // the following could also be "position"
-                        _.defer(function () { $.mobile.silentScroll($(n).offset().top); } );
-                        
-                    }, 
+                }, 
                 error: function (e) {
                     $.mobile.hidePageLoadingMsg();
                     alert("an error occurred");
@@ -91,18 +82,11 @@ var controllers = function (model) {
                 data: data,
                 type: "POST",
                 success: function (o) {
-                        $.mobile.hidePageLoadingMsg();
-                        
-                        model.clear();
-                        
-                       _(o.countdowns).each(function (countdownInfo) {
-                           model.getCountdown(countdownInfo);
-                        });           
-                        
-                        $.mobile.changePage($("#mainview"), "none");
-                    
-                    
-                    }, 
+                    model.clear();
+                    $.mobile.changePage($("#mainview"), "none");
+                    model.putCountdowns(o.countdowns);
+                    $.mobile.hidePageLoadingMsg();
+                }, 
                 error: function (e) {
                     $.mobile.hidePageLoadingMsg();
                     alert("an error occurred");
@@ -117,11 +101,11 @@ var controllers = function (model) {
                 url: "/countdown/random", 
                 type: "GET",
                 success: function (o) {
-                        $.mobile.hidePageLoadingMsg();
-                        model.clear();
-                        model.putCountdown(o);
-                        $.mobile.changePage($("#mainview"), "none");
-                    }, 
+                    model.clear();
+                    $.mobile.changePage($("#mainview"), "none");
+                    model.putCountdown(o);
+                    $.mobile.hidePageLoadingMsg();
+                }, 
                 error: function (e) {
                     $.mobile.hidePageLoadingMsg();
                     alert("an error occurred");
