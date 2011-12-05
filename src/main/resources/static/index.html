@@ -20,9 +20,8 @@
 
     <!-- main script -->
     <script src="index.js"></script>
-    <script src="new.js"></script>
-    <script src="search.js"></script>
-    <script src="other.js"></script>
+    <script src="model.js"></script>
+    <script src="controllers.js"></script>
     
     <style type="text/css">
         .seperator {
@@ -38,16 +37,16 @@
 
 <body>
 
-<div data-role="page" id="mainview">
+<div data-role="page" id="mainview" data-theme="b">
 
     <div data-role="header">
         <div data-role="navbar">
-            <ul>
-                <li><a href="#newcountdown" data-icon="plus">New</a></li>
-                <li><a href="#searchcountdowns" data-icon="search">Search</a></li>
-                <li><a id="random" data-icon="star">Random</a></li>
-                <li><a id="all" data-icon="refresh">All</a></li>
-                <li><a id="clear" data-icon="delete">Clear</a></li>
+            <ul >
+                <li><a href="#newcountdown" data-theme="c" data-icon="plus">New</a></li>
+                <li><a href="#searchcountdowns" data-theme="c" data-icon="search">Search</a></li>
+                <li><a id="random" data-theme="c" data-icon="star">Random</a></li>
+                <li><a id="all" data-theme="c" data-icon="refresh">All</a></li>
+                <li><a id="clear" data-theme="c" data-icon="delete">Clear</a></li>
             </ul>
         </div>
     </div>
@@ -60,7 +59,7 @@
 </div>
 
 <div data-role="page" id="newcountdown">
-    <div data-role="header">
+    <div data-role="header" data-theme="c" >
         <h1>Add countdown</h1>
     </div>
     
@@ -92,7 +91,7 @@
 </div>
 
 <div data-role="page" id="searchcountdowns">
-    <div data-role="header">
+    <div data-role="header"data-theme="c" >
         <h1>Search countdowns</h1>
     </div>
     
