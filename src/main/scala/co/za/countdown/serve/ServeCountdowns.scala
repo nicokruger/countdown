@@ -23,7 +23,7 @@ import co.za.countdown._
 object ServeCountdowns {
   val nameField = "name"
   implicit val formats = Serialization.formats(NoTypeHints)
-  val searchResultMap = (cd: Countdown) => ((nameField -> cd.name) ~ ("url" -> cd.url))
+  val searchResultMap = (countdown:Countdown) => MillisCountdown(countdown)
 
   val countdowns = unfiltered.filter.Planify {
     case GET(Path(Seg("countdown" :: "random" :: Nil))) => randomResponse
@@ -75,7 +75,7 @@ object ServeCountdowns {
     val tags = params.getOrElse("tags", Nil).flatMap(_.split(",")).toList
 
     val results = CountdownService.search(name, startMillis, endMillis, tags).map(searchResultMap).toList
-    JsonContent ~> ResponseString(compact(render("countdowns" -> results)))
+    JsonContent ~> ResponseString(write(Countdowns(results)))
   }
 
   def countdownResponse(q: String) = {
@@ -88,10 +88,12 @@ object ServeCountdowns {
   }
 
   def allCountdownsResponse = {
-    JsonContent ~> ResponseString(compact(render("countdowns" -> CountdownService.retrieveAll.map(
-      searchResultMap))))
+    JsonContent ~> ResponseString(write(Countdowns(CountdownService.retrieveAll.map(searchResultMap))))
   }
+
+
 }
+case class Countdowns(countdowns: List[MillisCountdown])
 
 
 
