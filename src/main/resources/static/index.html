@@ -30,13 +30,57 @@
             margin-left:5px;
             margin-right:5px;
         }
+        
+        #countdownlist {
+            list-style: none;
+            margin: 0 auto;
+            width: 800px;
+        }
+        
+        li.countdown {
+            border-bottom: 1px solid #000000;
+            padding: 5px;
+            margin-bottom: 3px;
+            height: 32px;
+        }
+        
+        h5.countdown {
+            font-size: 16px;
+        }
+
+
+        .ui-page {
+            background: #ffffff;
+        }
+        
+        span.countdown {
+            display: block;
+            float: left;
+            width: 400px;
+            margin: 0px;
+            padding: 0px;
+        }
+        span.countdown-name {
+            display: block;
+            width: 300px;
+            float: left;
+            margin: 0px;
+            padding: 0px;
+        }
+        span.countdown-tags {
+            display: block;
+            width: 80px;
+            float: left;
+            margin: 0px;
+            padding: 0px;
+        }
     </style>
     
     <script src="vendor/jquery.mobile.min.js"></script>
 
 </head>
 
-<body data-theme="c">
+<body>
 
 <div data-role="page" id="mainview" data-theme="c">
 
@@ -61,7 +105,7 @@
     </div>
 
     <div class="main-item">
-        <ul align="center" data-role="listview" data-inset="true" id="countdownlist">
+        <ul id="countdownlist">
         </ul>
     </div>
 
