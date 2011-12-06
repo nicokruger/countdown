@@ -23,6 +23,20 @@ $(document).bind("mobileinit", function () {
         
         $("#searchForm").bind("submit", controller.search);
         
+        $("#searchcountdowns").click(function () {
+            $("#searchbar").toggle();
+        });
+        
+        $("#searchbox").keyup(function (e) {
+            if (e.which == 13) {
+                e.preventDefault();
+                tf.search({"name": $("#searchbox").val()});
+            } else if (e.keyCode == 27) {
+                e.preventDefault();
+                $("#searchbar").toggle();
+            }
+        });
+        
         // "Start" the interface by requesting all 
         _.defer(function () {
             //tf.nextWeek();

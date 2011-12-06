@@ -42,18 +42,23 @@
 <div data-role="page" id="mainview" data-theme="c">
 
     <div data-role="header" data-theme="f">
-        <h1><div>When Is?</div><span style="font-weight: normal; font-size: small">Because this generation can't wait...</span></h1>
+        <h1><div>When Is?</div><span style="font-weight: normal; font-size: small">Your timing information service...</span></h1>
         <h1>
-            <div data-role="controlgroup" data-type="horizontal" data-inline="true">
+            <div id="buttonbar" data-role="controlgroup" data-type="horizontal" data-inline="true">
                 <a href="#newcountdown" data-role="button" data-inline="true" data-icon="plus" data-theme="b">&nbsp;</a>
-                <a href="#searchcountdowns" href="#newcountdown" data-role="button" data-inline="true" data-theme="c">Search</a>
+                <a id="searchcountdowns" data-role="button" data-inline="true" data-theme="c">Search</a>
                 <a id="random" data-role="button" data-inline="true" data-theme="c" >Random</a>
                 <a id="fetchWeek" data-role="button" data-inline="true" data-theme="c" >Week</a>
                 <a id="fetchYear" data-role="button" data-inline="true" data-theme="c"  >Year</a>
                 <a id="fetchAll" data-role="button" data-inline="true" data-theme="c"  >All</a>
                 <a href="#clear" data-role="button" data-inline="true" data-icon="delete" data-theme="b">&nbsp;</a>
             </div>
+            
+            <div id="searchbar" data-role="controlgroup" style="display: none">
+                <input id="searchbox" autofocus type="text" name="name" id="searchName" data-inline="true" value="" />
+            </div>
         </h1>
+        
     </div>
 
     <div class="main-item">
@@ -61,7 +66,7 @@
         </ul>
     </div>
 
-    <div data-theme="c" data-role="footer" data-position="fixed">
+    <div data-theme="c" data-role="footer" data-position="fixed" >
         <h4 id="info"></h4>
     </div>
 </div>
@@ -98,41 +103,6 @@
     </div>
 </div>
 
-<div data-role="page" id="searchcountdowns">
-    <div data-role="header"data-theme="c" >
-        <h1>Search countdowns</h1>
-    </div>
-    
-    <div data-role="content">
-        <form id="searchForm" data-ajax="false">
-        
-            <div data-role="fieldcontain">
-                <label for="name">Name:</label>
-                <input autofocus type="text" name="name" id="searchName" value="" />
-            </div>
-            
-            <div data-role="fieldcontain">
-                <label for="tags">Tags:</label>
-                <input autofocus type="text" name="tags" id="searchTags" value="" />
-            </div>
-            
-            <div data-role="fieldcontain">
-                <label for="tags">Range start:<br/><span style="font-size: small"> (YY-MM-DDThh:mm eg. 2011-12-01T13:00)</span></label>
-                <input type="datetime-local" name="datetime" id="searchRangeStart" value="" />
-            </div>
-            
-            <div data-role="fieldcontain">
-                <label for="tags">Range end:<br/><span style="font-size: small"> (YY-MM-DDThh:mm eg. 2011-12-01T13:00)</span></label>
-                <input type="datetime-local" name="datetime" id="searchRangeEnd" value="" />
-            </div>
-            
-            <a data-role="button" data-inline="true" data-icon="back" href="#mainview">Back</a>
-            <button type="submit" data-inline="true" data-icon="search">Search</a>
-            
-        </form> 
-        
-    </div>
-</div>
 
 </body>
 
