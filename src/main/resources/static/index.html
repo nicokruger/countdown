@@ -37,20 +37,27 @@
 
 </head>
 
-<body>
+<body data-theme="c">
 
-<div data-role="page" id="mainview" data-theme="b">
+<div data-role="page" id="mainview" data-theme="c">
 
-    <div class="main-item" >
-        <a href="#newcountdown" data-role="button" data-inline="true" data-icon="plus" data-theme="b">&nbsp;</a>
-        <a href="#searchcountdowns" href="#newcountdown" data-role="button" data-inline="true" data-theme="c">Search</a>
-        <a id="random" data-role="button" data-inline="true" data-theme="c" >Random</a>
-        <a id="fetchWeek" data-role="button" data-inline="true" data-theme="c" >Week</a>
-        <a id="fetchYear" data-role="button" data-inline="true" data-theme="c"  >Year</a>
+    <div data-role="header" data-theme="f">
+        <h1><div>When Is?</div><span style="font-weight: normal; font-size: small">Because this generation can't wait...</span></h1>
+        <h1>
+            <div data-role="controlgroup" data-type="horizontal" data-inline="true">
+                <a href="#newcountdown" data-role="button" data-inline="true" data-icon="plus" data-theme="b">&nbsp;</a>
+                <a href="#searchcountdowns" href="#newcountdown" data-role="button" data-inline="true" data-theme="c">Search</a>
+                <a id="random" data-role="button" data-inline="true" data-theme="c" >Random</a>
+                <a id="fetchWeek" data-role="button" data-inline="true" data-theme="c" >Week</a>
+                <a id="fetchYear" data-role="button" data-inline="true" data-theme="c"  >Year</a>
+                <a id="fetchAll" data-role="button" data-inline="true" data-theme="c"  >All</a>
+                <a href="#clear" data-role="button" data-inline="true" data-icon="delete" data-theme="b">&nbsp;</a>
+            </div>
+        </h1>
     </div>
 
     <div class="main-item">
-        <ul data-role="listview" data-inset="true" id="countdownlist">
+        <ul align="center" data-role="listview" data-inset="true" id="countdownlist">
         </ul>
     </div>
 
