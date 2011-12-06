@@ -5,23 +5,22 @@ $(document).bind("mobileinit", function () {
     
     $(function () {
         var m = model($("#countdownlist"));
-        var controller = controllers(m);
-        var tf = timeFunctions(m);
+        var action = actions(m);
         
-        $("#newcountdownForm").bind("submit", controller.newCountdown);
+        $("#newcountdownForm").bind("submit", action.newCountdown);
         
-        $("#random").click(controller.random);
+        $("#random").click(action.random);
         
-        $("#clear").click(controller.clear);
+        $("#clear").click(action.clear);
         
-        $("#fetchWeek").click(tf.nextWeek);
-        $("#fetchTomorrow").click(tf.tomorrow);
-        $("#fetchMonth").click(tf.nextMonth);
-        $("#fetchWeekend").click(tf.nextWeekend);
-        $("#fetchYear").click(tf.nextYear);
-        $("#fetchAll").click(tf.all);
+        $("#fetchWeek").click(action.nextWeek);
+        $("#fetchTomorrow").click(action.tomorrow);
+        $("#fetchMonth").click(action.nextMonth);
+        $("#fetchWeekend").click(action.nextWeekend);
+        $("#fetchYear").click(action.nextYear);
+        $("#fetchAll").click(action.all);
         
-        $("#searchForm").bind("submit", controller.search);
+        $("#searchForm").bind("submit", action.search);
         
         $("#searchcountdowns").click(function () {
             $("#searchbar").toggle();
@@ -30,7 +29,7 @@ $(document).bind("mobileinit", function () {
         $("#searchbox").keyup(function (e) {
             if (e.which == 13) {
                 e.preventDefault();
-                tf.search({"name": $("#searchbox").val()});
+                action.search({"name": $("#searchbox").val()});
             } else if (e.keyCode == 27) {
                 e.preventDefault();
                 $("#searchbar").toggle();
