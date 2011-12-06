@@ -29,5 +29,40 @@ describe("The countdown model and view", function() {
         });
         
     });
+    
+    describe("the search box", function () {
+        it("should have the ability to search for tags, and name", function () {
+            var sd = parseSearchData("name1 #tag1 name2 #tag2");
+            
+            expect(sd).toEqual({
+                name: "name1 name2",
+                tags: "tag1,tag2"
+            });
+        });
+        
+        it("should not populate tags if no hashes are present", function () {
+            var sd = parseSearchData("name1 name2");
+            
+            expect(sd).toEqual({
+                name: "name1 name2"
+            });
+        });
+        
+        it("should not populate names if no non-hashes are present", function () {
+            var sd = parseSearchData("#tag1 #tag2");
+            
+            expect(sd).toEqual({
+                tags: "tag1,tag2"
+            });
+        });
+        
+        it("should have an empty name field if input is empty", function () {
+            var sd = parseSearchData("");
+            
+            expect(sd).toEqual({
+                name: ""
+            });
+        });
+    });
 
 });

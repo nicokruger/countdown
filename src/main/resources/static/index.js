@@ -29,7 +29,7 @@ $(document).bind("mobileinit", function () {
         $("#searchbox").keyup(function (e) {
             if (e.which == 13) {
                 e.preventDefault();
-                action.search({"name": $("#searchbox").val()});
+                action.search(parseSearchData($("#searchbox").val()));
             } else if (e.keyCode == 27) {
                 e.preventDefault();
                 $("#searchbar").toggle();
