@@ -41,31 +41,22 @@
 
 <div data-role="page" id="mainview" data-theme="b">
 
-    <div data-role="header">
-        <div data-role="navbar">
-            <ul >
-                <li><a href="#newcountdown" data-theme="b" data-icon="plus">New</a></li>
-                <li><a href="#searchcountdowns" data-theme="b" data-icon="search">Search</a></li>
-                <li><a id="random" data-theme="b" data-icon="star">Random</a></li>
-                <li><a id="clear" data-theme="b" data-icon="delete">Clear</a></li>
-            </ul>
-        </div>
+    <div class="main-item" >
+        <a href="#newcountdown" data-role="button" data-inline="true" data-icon="plus" data-theme="b">&nbsp;</a>
+        <a href="#searchcountdowns" href="#newcountdown" data-role="button" data-inline="true" data-theme="c">Search</a>
+        <a id="random" data-role="button" data-inline="true" data-theme="c" >Random</a>
+        <a id="fetchWeek" data-role="button" data-inline="true" data-theme="c" >Week</a>
+        <a id="fetchYear" data-role="button" data-inline="true" data-theme="c"  >Year</a>
     </div>
 
     <div class="main-item">
-        <div data-role="navbar">
-            <ul>
-                <li><a id="fetchWeek" data-theme="c">Next week</a></li>
-                <li><a id="fetchTomorrow" data-theme="c">Tomorrow</a></li>
-                <li><a id="fetchMonth" data-theme="c" >Next month</a></li>
-                <li><a id="fetchYear" data-theme="c" >Next year</a></li>
-                <li><a id="fetchWeekend" data-theme="c" >Nearest weekend</a></li>
-            </ul>
-        </div>
-            <ul data-role="listview" data-inset="true" id="countdownlist">
+        <ul data-role="listview" data-inset="true" id="countdownlist">
         </ul>
     </div>
-    
+
+    <div data-theme="c" data-role="footer" data-position="fixed">
+        <h4 id="info"></h4>
+    </div>
 </div>
 
 <div data-role="page" id="newcountdown">
