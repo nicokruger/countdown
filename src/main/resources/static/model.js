@@ -22,6 +22,10 @@ var model = function (countdownHolder) {
         },
         
         putCountdowns: function (countdowns) {
+            if (countdowns.length == 0) {
+                $(countdownHolder).html('<h1>Nothing to see here...</h1>');
+                return;
+            }
             $.mobile.showPageLoadingMsg();
             var that = this;
             _(countdowns).each(function (countdown) {

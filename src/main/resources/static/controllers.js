@@ -2,25 +2,7 @@ var controllers = function (model) {
     
     return {
         
-        all: function() {
-            // Retrieve inital list of countdowns
-            
-            $.mobile.showPageLoadingMsg();
-
-            $.ajax({
-                url: "/countdownlist",
-                dataType: "json",
-                success: function (o) {
-                    model.clear();
-                    model.putCountdowns(o.countdowns);
-                },
-                error: function (o) {
-                    $.mobile.hidePageLoadingMsg();
-                    alert("error retrieving data");
-                }
-            });
-        },
-        
+       
         newCountdown: function (e) {
             e.preventDefault();
              

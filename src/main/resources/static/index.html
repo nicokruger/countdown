@@ -11,6 +11,7 @@
     <!-- vendor scripts -->
     <script src="vendor/jquery-1.6.2.min.js"></script>
     <script src="vendor/underscore.js"></script>
+    <script src="date.js"></script>
 
     <!-- led scripts -->
     <script src="timo/led.js"></script>
@@ -22,6 +23,7 @@
     <script src="index.js"></script>
     <script src="model.js"></script>
     <script src="controllers.js"></script>
+    <script src="time_views.js"></script>
     
     <style type="text/css">
         .seperator {
@@ -42,17 +44,25 @@
     <div data-role="header">
         <div data-role="navbar">
             <ul >
-                <li><a href="#newcountdown" data-theme="c" data-icon="plus">New</a></li>
-                <li><a href="#searchcountdowns" data-theme="c" data-icon="search">Search</a></li>
-                <li><a id="random" data-theme="c" data-icon="star">Random</a></li>
-                <li><a id="all" data-theme="c" data-icon="refresh">All</a></li>
-                <li><a id="clear" data-theme="c" data-icon="delete">Clear</a></li>
+                <li><a href="#newcountdown" data-theme="b" data-icon="plus">New</a></li>
+                <li><a href="#searchcountdowns" data-theme="b" data-icon="search">Search</a></li>
+                <li><a id="random" data-theme="b" data-icon="star">Random</a></li>
+                <li><a id="clear" data-theme="b" data-icon="delete">Clear</a></li>
             </ul>
         </div>
     </div>
 
     <div class="main-item">
-        <ul data-role="listview" data-inset="true" id="countdownlist">
+        <div data-role="navbar">
+            <ul>
+                <li><a id="fetchWeek" data-theme="c">Next week</a></li>
+                <li><a id="fetchTomorrow" data-theme="c">Tomorrow</a></li>
+                <li><a id="fetchMonth" data-theme="c" >Next month</a></li>
+                <li><a id="fetchYear" data-theme="c" >Next year</a></li>
+                <li><a id="fetchWeekend" data-theme="c" >Nearest weekend</a></li>
+            </ul>
+        </div>
+            <ul data-role="listview" data-inset="true" id="countdownlist">
         </ul>
     </div>
     
