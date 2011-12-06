@@ -56,6 +56,7 @@ var model = function (countdownHolder) {
             }
             $(outside).append("<h5>" + c.name + "</h5>");
             $(outside).append("<div class=\"countdown\" id=\"" + c.url + "\"></div>");
+            $(outside).append('<span class="ui-li-count">' + c.tags + '</span>');
             
             countdown($(outside).find("#" + c.url), c.eventDate, 24, 32, ledColors);
             
