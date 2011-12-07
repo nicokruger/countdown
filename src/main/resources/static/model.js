@@ -1,5 +1,5 @@
 var ledColors = {
-    lit: "rgba(0, 0, 0, 1.0)",
+    lit: "rgba(82, 139, 183, 1.0)",
     unlit: "rgba(0, 0, 0, 0.0)",
     outline: "rgba(0, 0, 0, 0.0)"
 }
@@ -32,13 +32,13 @@ var model = function (countdownHolder) {
                 that._putCountdown(countdown);
             });
             $.mobile.hidePageLoadingMsg();
-            _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
+            //_.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
         },
         
         // adds a countdown, and refreshes the view
         putCountdown: function (c) {
             var o = this._putCountdown(c);
-            _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
+            //_.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
             return o;
         },
         
@@ -48,14 +48,16 @@ var model = function (countdownHolder) {
             var outside;
             
             if (where === undefined) {
-                outside = $('<li></li>').appendTo(countdownHolder);
+                outside = $('<li class="countdown"></li>').appendTo(countdownHolder);
                 this.countdowns.push(c);
             } else {
-                outside = $('<li></li>').insertBefore($(countdownHolder).find("#" + this.countdowns[where].url).parent());
+                outside = $('<li class="countdown"></li>').insertBefore($(countdownHolder).find("#" + this.countdowns[where].url).parent());
                 this.countdowns.splice(where, 0, c);
             }
-            $(outside).append("<h5>" + c.name + "</h5>");
-            $(outside).append("<div class=\"countdown\" id=\"" + c.url + "\"></div>");
+            //outside = $("<div></div>").appendTo(outside);
+            $(outside).append("<span class=\"countdown-name\">" + c.name + "</span>");
+            $(outside).append("<span class=\"countdown\" id=\"" + c.url + "\"></span>");
+            $(outside).append('<span class="ui-li-count countdown-tags">' + c.tags + '</span>');
             
             countdown($(outside).find("#" + c.url), c.eventDate, 24, 32, ledColors);
             
