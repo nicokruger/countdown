@@ -7,7 +7,8 @@ import com.mongodb.casbah.commons.conversions.scala._
 import co.za.countdown.Countdown._
 import org.bson.types.ObjectId
 import co.za.countdown.{AspiringCountdown, Countdown}
-import org.joda.time.{DateTime, LocalDate}
+import util.matching.Regex
+import org.joda.time.{DateTimeZone, DateTime, LocalDate}
 
 /**
  * User: dawid
@@ -41,23 +42,24 @@ object CountdownService {
     coll.find(dbObjFromAspiring(countdown)).map(countdownFromDB)
   }
 
+  def regexify( query: String) : Regex =  {
+    query.split("""[\s\,]""")
+      .foldLeft(new StringBuilder("(?i).*"))( (builder:StringBuilder, part:String) => builder.append(".*").append(part) )
+    .toString.r
+  }
+
+  def regexTuples(fieldName:String, values: List[String]) : List[ (String, Regex) ] =
+    values.foldLeft(List[(String, Regex)]())((acc: List[(String, Regex)], s: String) => (fieldName, regexify(s)) :: acc)
+
   def search(name: Option[String], start: Option[Long], end: Option[Long], tags: List[String]) = {
 
-    val tagTuples = tags.map((s: String) => tagsField -> s).toList
-    val nameTuple = name.map( (s:String) => {
-      val queryString = s.split("[\\s\\,]").foldLeft(new StringBuilder("(?i).*"))( (builder:StringBuilder, b:String) => builder.append(".*").append(b) )
-      nameField -> ( queryString.r)
-    }).toList
-
-    val orTuples = (tagTuples ++ nameTuple)
-
-    val q: DBObject = if(orTuples.isEmpty) MongoDBObject() else $or(orTuples: _*)
-
-    val results = coll.find(q) map countdownFromDB
+    val tagsQuery : DBObject = if (!tags.isEmpty) $or(regexTuples(tagsField, tags):_*) else MongoDBObject()
+    val query = regexTuples(nameField, name.toList).foldLeft(tagsQuery)(_+=_)
+    val results = coll.find(query) map countdownFromDB
 
     results.filter((countdown: Countdown) => {
-      (start.isEmpty || (countdown.eventDate.compareTo(new DateTime(start.get)) >= 0)) &&
-        (end.isEmpty || (countdown.eventDate.compareTo(new DateTime(end.get)) <= 0))
+      (start.isEmpty || (countdown.eventDate.getMillis >= start.get)) &&
+        (end.isEmpty || (countdown.eventDate.getMillis <= end.get))
     })
   }
 
@@ -95,7 +97,3 @@ object CountdownService {
     }
   }
 }
-
-//object CMain extends App{
-//  CountdownService.upsertCountdown( ("test item", new DateTime()))
-//}

@@ -7,11 +7,11 @@ import net.liftweb.json._
 import net.liftweb.json.Serialization.{read, write}
 import net.liftweb.json.JsonDSL._
 import co.za.countdown.counter.CountdownService
-import org.joda.time.DateTime
 import java.net.URL
 import org.bson.types.ObjectId
 import unfiltered.response.ResponseHeader._
 import co.za.countdown._
+import org.joda.time.{DateTimeZone, DateTime}
 
 
 /**
@@ -44,7 +44,7 @@ object ServeCountdowns {
 
   def newResponse(params: Map[String, Seq[String]]) = {
     addResponse(params, (name, eventMillis: Long, tags) => {
-      CountdownService.insertCountdown(AspiringCountdown(name, new DateTime(eventMillis.toLong), tags.split(",").toList)) match {
+      CountdownService.insertCountdown(AspiringCountdown(name, new DateTime(eventMillis.toLong, DateTimeZone.UTC), tags.split(",").toList)) match {
         case Some(c: Countdown) => JsonContent ~> ResponseString(write(MillisCountdown(c)))
         case _ => errorResponse("Could not persist")
       }
@@ -53,7 +53,7 @@ object ServeCountdowns {
 
   def upsertResponse(params: Map[String, Seq[String]]) = {
     addResponse(params, (name, eventMillis: Long, tags) => {
-      CountdownService.upsertCountdown(AspiringCountdown(name, new DateTime(eventMillis.toLong), tags.split(",").toList))
+      CountdownService.upsertCountdown(AspiringCountdown(name, new DateTime(eventMillis.toLong, DateTimeZone.UTC), tags.split(",").toList))
       ResponseString(compact(render("success" -> "Countdown upserted")))
     })
   }
@@ -90,8 +90,6 @@ object ServeCountdowns {
   def allCountdownsResponse = {
     JsonContent ~> ResponseString(write(Countdowns(CountdownService.retrieveAll.map(searchResultMap))))
   }
-
-
 }
 case class Countdowns(countdowns: List[MillisCountdown])
 
