@@ -26,12 +26,12 @@ var model = function (countdownHolder) {
                 $(countdownHolder).html('<h1>Nothing to see here...</h1>');
                 return;
             }
-            $.mobile.showPageLoadingMsg();
+            //$.mobile.showPageLoadingMsg();
             var that = this;
             _(countdowns).each(function (countdown) {
                 that._putCountdown(countdown);
             });
-            $.mobile.hidePageLoadingMsg();
+            //$.mobile.hidePageLoadingMsg();
             //_.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
         },
         
@@ -55,7 +55,7 @@ var model = function (countdownHolder) {
                 this.countdowns.splice(where, 0, c);
             }
             //outside = $("<div></div>").appendTo(outside);
-            $(outside).append("<span class=\"countdown-name\">" + c.name + "</span>");
+            $(outside).append("<span class=\"countdown-name\"><a href=\"/?" + c.url + "\">" + c.name + "</a></span>");
             $(outside).append("<span class=\"countdown\" id=\"" + c.url + "\"></span>");
             $(outside).append('<span class="ui-li-count countdown-tags">' + c.tags + '</span>');
             
@@ -68,7 +68,7 @@ var model = function (countdownHolder) {
         
         getCountdown: function (countdownInfo) {
             
-            $.mobile.showPageLoadingMsg();
+            //$.mobile.showPageLoadingMsg();
             
             this.pending += 1;
             var that = this;
@@ -80,7 +80,7 @@ var model = function (countdownHolder) {
                     that.pending -= 1;
                     if (that.pending == 0) {
                         _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
-                        $.mobile.hidePageLoadingMsg();
+                        //$.mobile.hidePageLoadingMsg();
                     } 
                 },
                 error: function (o) {
@@ -88,7 +88,7 @@ var model = function (countdownHolder) {
                     if (that.pending == 0) {
                         _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
                         $(countdownHolder).show();
-                        $.mobile.hidePageLoadingMsg();
+                        //$.mobile.hidePageLoadingMsg();
                     }
                     // TODO: handle the error
                 }

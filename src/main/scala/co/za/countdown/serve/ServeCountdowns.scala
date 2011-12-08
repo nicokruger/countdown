@@ -1,7 +1,6 @@
 package co.za.countdown.serve
 
 
-import unfiltered.request._
 import unfiltered.response._
 import net.liftweb.json._
 import net.liftweb.json.Serialization.{read, write}
@@ -12,7 +11,9 @@ import java.net.URL
 import org.bson.types.ObjectId
 import unfiltered.response.ResponseHeader._
 import co.za.countdown._
-
+import unfiltered.request._
+import collection.mutable.ListBuffer
+import scala.collection.JavaConversions._
 
 /**
  * User: dawid
@@ -30,16 +31,61 @@ object ServeCountdowns {
     case Path(Seg("countdown" :: "new" :: Nil)) & Params(params) => newResponse(params)
     case Path(Seg("countdown" :: "upsert" :: Nil)) & Params(params) => upsertResponse(params)
     case Path(Seg("countdown" :: "search" :: Nil)) & Params(params) => searchResponse(params)
-    case GET(Path(Seg("countdown" :: q :: Nil))) => countdownResponse(q)
     case GET(Path(Seg("countdownlist" :: Nil))) => allCountdownsResponse
-    case _ => errorResponse("Invalid request")
+    case GET(Path("/random")) & Accepts.Html(_) => htmlResponse(List(randomCountdown))
+    case req @ GET(Path("/")) & Params(params) => {
+
+      val s = req.headers("Accept").mkString(",")
+
+      if (s.contains("application/json")) {
+        countdownResponse(params.mkString)
+      } else if (s.contains("text/html")) {
+
+        if (params.size > 0) {
+          val id:String = params.keys.first.values.foldLeft("")( (x,y) => x + y)
+
+          CountdownService.retrieveById(new ObjectId(id)) match {
+            case Some(item: Countdown) => {
+              HtmlContent ~> htmlResponse(List(item))
+            }
+            case None => errorResponse("Countdown was not found ")
+          }
+        } else {
+          htmlResponse(CountdownService.retrieveAll)
+        }
+      } else {
+        ResponseString("Invalid type")
+      }
+    }
+    case GET(Path("/")) & Accepts.Html(_) => htmlResponse(CountdownService.retrieveAll)
+    //case
+    //case GET(Path(Seg(q :: Nil))) & Accepts.Json(_) => countdownResponse(q)
+
+    //case x @ Accepts.Html(_) => x match {
+//       case GET(Path(Seg("_" :: Nil))) => indexResponse
+ //   }
+    //case x @ Accepts.Html(_) => x match {
+    //  case GET(Path(Seg("" :: Nil))) => indexResponse
+    //}
+    //case _ => require().
+  }
+
+  def htmlResponse(countdowns:List[Countdown]) = {
+    val c = for (countdown <- countdowns) yield new CountdownInfo(countdown.name, countdown.url, countdown.eventDate.getMillis)
+
+    val javaCountdowns = asList(ListBuffer(c: _*))
+    HtmlContent ~> ResponseString(CountdownHtml.getHtml(javaCountdowns))
   }
 
   def errorResponse(msg: String) = JsonContent ~> ResponseString(compact(render("error" -> msg)))
 
+  def randomCountdown = {
+    val all = CountdownService.retrieveAll
+    all((math.random * (all.length - 1)).toInt)
+  }
   def randomResponse = {
     val all = CountdownService.retrieveAll
-    JsonContent ~> ResponseString(write(MillisCountdown(all((math.random * (all.length - 1)).toInt))))
+    JsonContent ~> ResponseString(write(MillisCountdown(randomCountdown)))
   }
 
   def newResponse(params: Map[String, Seq[String]]) = {

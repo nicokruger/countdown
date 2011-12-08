@@ -14,9 +14,14 @@ import java.io.File
 
 object TestStartup extends App {
   unfiltered.jetty.Http(55555)
-    .context("/static") {
+    .context("/") {
+      (builder: ContextBuilder) => builder.filter(ServeCountdowns.countdowns); builder.resources(new URL(getClass.getResource("/static/"), "."))
+    }
+    .context("/filesystem") {
+      (builder: ContextBuilder) => builder.resources(new URL(new File("src/main/resources/static").toURI.toURL, "."))
+    }.run()
+/*    .context("/") {
       (builder: ContextBuilder) => builder.resources(new URL(getClass.getResource("/static/"), "."))}
     .context("/filesystem") {
-      (builder: ContextBuilder) => builder.resources(new URL(new File("src/main/resources/static").toURI.toURL, "."))}
-    .filter(ServeCountdowns.countdowns).run()
+      (builder: ContextBuilder) => builder.resources(new URL(new File("src/main/resources/static").toURI.toURL, "."))}*/
 }

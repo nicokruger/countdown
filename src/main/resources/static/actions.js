@@ -1,7 +1,7 @@
 var actions = function (model) {
     
     var countdownAction = function (url, data, method, success) {
-        $.mobile.showPageLoadingMsg();
+        //$.mobile.showPageLoadingMsg();
         
         $.ajax({
             url: url, 
@@ -11,12 +11,12 @@ var actions = function (model) {
                 model.clear();
                 $.mobile.changePage($("#mainview"), "none");
                 o.hasOwnProperty("countdowns") ? model.putCountdowns(o.countdowns) : model.putCountdown(o);
-                $.mobile.hidePageLoadingMsg();
+                //$.mobile.hidePageLoadingMsg();
                 
                 success !== undefined && success(o);
             }, 
             error: function (e) {
-                $.mobile.hidePageLoadingMsg();
+                //$.mobile.hidePageLoadingMsg();
                 alert("an error occurred");
                 
                 $("#info").html("An error occurred... Please try again");
