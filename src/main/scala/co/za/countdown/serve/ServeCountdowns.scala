@@ -71,7 +71,8 @@ object ServeCountdowns {
   }
 
   def htmlResponse(countdowns:List[Countdown]) = {
-    val c = for (countdown <- countdowns) yield new CountdownInfo(countdown.name, countdown.url, countdown.eventDate.getMillis)
+    val c = for (countdown <- countdowns) yield new CountdownInfo(countdown.name, countdown.url, countdown.eventDate.getMillis, 
+      asList(countdown.tags))
 
     val javaCountdowns = asList(ListBuffer(c: _*))
     HtmlContent ~> ResponseString(CountdownHtml.getHtml(javaCountdowns))
@@ -84,7 +85,6 @@ object ServeCountdowns {
     all((math.random * (all.length - 1)).toInt)
   }
   def randomResponse = {
-    val all = CountdownService.retrieveAll
     JsonContent ~> ResponseString(write(MillisCountdown(randomCountdown)))
   }
 
