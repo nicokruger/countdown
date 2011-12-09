@@ -33,6 +33,11 @@ object ServeCountdowns {
     case Path(Seg("countdown" :: "search" :: Nil)) & Params(params) => searchResponse(params)
     case GET(Path(Seg("countdownlist" :: Nil))) => allCountdownsResponse
     case GET(Path("/random")) & Accepts.Html(_) => htmlResponse(List(randomCountdown))
+
+    case Path("/day") & Accepts.Html(_) => htmlResponse(CountdownService.day)
+    case Path("/week") & Accepts.Html(_) => htmlResponse(CountdownService.week)
+    case Path("/month") & Accepts.Html(_) => htmlResponse(CountdownService.month)
+
     case req @ GET(Path("/")) & Params(params) => {
 
       val s = req.headers("Accept").mkString(",")

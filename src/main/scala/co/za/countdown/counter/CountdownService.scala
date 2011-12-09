@@ -7,6 +7,7 @@ import com.mongodb.casbah.commons.conversions.scala._
 import co.za.countdown.Countdown._
 import org.bson.types.ObjectId
 import co.za.countdown.{AspiringCountdown, Countdown}
+import scala.None
 import org.joda.time.{DateTime, LocalDate}
 
 /**
@@ -41,7 +42,7 @@ object CountdownService {
     coll.find(dbObjFromAspiring(countdown)).map(countdownFromDB)
   }
 
-  def search(name: Option[String], start: Option[Long], end: Option[Long], tags: List[String]) = {
+  def search(name: Option[String], start: Option[Long], end: Option[Long], tags: List[String]): List[Countdown] = {
 
     val tagTuples = tags.map((s: String) => tagsField -> s).toList
     val nameTuple = name.map( (s:String) => {
@@ -58,9 +59,26 @@ object CountdownService {
     results.filter((countdown: Countdown) => {
       (start.isEmpty || (countdown.eventDate.compareTo(new DateTime(start.get)) >= 0)) &&
         (end.isEmpty || (countdown.eventDate.compareTo(new DateTime(end.get)) <= 0))
-    })
+    }).toList
   }
 
+  def week: List[Countdown] = {
+    var now = new DateTime().getMillis
+    var then = new DateTime().plusWeeks(1).getMillis 
+    search(None, Some(now), Some(then), List())
+  }
+  
+  def day: List[Countdown] = {
+    var now = new DateTime().getMillis
+    var then = new DateTime().plusDays(1).getMillis
+    search(None, Some(now), Some(then), List())
+  }
+  
+  def month: List[Countdown] = {
+    var now = new DateTime().getMillis
+    var then = new DateTime().plusMonths(1).getMillis
+    search(None, Some(now), Some(then), List())
+  }
   def retrieveAll: List[Countdown] = {
     (for {dbobj <- coll}
     yield countdownFromDB(dbobj)).toList

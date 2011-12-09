@@ -22,10 +22,6 @@ $(function () {
     
     $("#searchForm").bind("submit", action.search);
     
-    $("#searchcountdowns").click(function () {
-        $("#searchbar").toggle();
-    });
-    
     $("#searchbox").keyup(function (e) {
         if (e.which == 13) {
             e.preventDefault();

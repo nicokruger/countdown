@@ -26,19 +26,15 @@ var model = function (countdownHolder) {
                 $(countdownHolder).html('<h1>Nothing to see here...</h1>');
                 return;
             }
-            //$.mobile.showPageLoadingMsg();
             var that = this;
             _(countdowns).each(function (countdown) {
                 that._putCountdown(countdown);
             });
-            //$.mobile.hidePageLoadingMsg();
-            //_.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
         },
         
         // adds a countdown, and refreshes the view
         putCountdown: function (c) {
             var o = this._putCountdown(c);
-            //_.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
             return o;
         },
         
@@ -68,8 +64,6 @@ var model = function (countdownHolder) {
         
         getCountdown: function (countdownInfo) {
             
-            //$.mobile.showPageLoadingMsg();
-            
             this.pending += 1;
             var that = this;
             $.ajax({
@@ -80,7 +74,6 @@ var model = function (countdownHolder) {
                     that.pending -= 1;
                     if (that.pending == 0) {
                         _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
-                        //$.mobile.hidePageLoadingMsg();
                     } 
                 },
                 error: function (o) {
@@ -88,7 +81,6 @@ var model = function (countdownHolder) {
                     if (that.pending == 0) {
                         _.isFunction(countdownHolder["listview"]) && countdownHolder.listview("refresh");
                         $(countdownHolder).show();
-                        //$.mobile.hidePageLoadingMsg();
                     }
                     // TODO: handle the error
                 }

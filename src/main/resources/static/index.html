@@ -6,8 +6,6 @@
     <meta charset=utf-8 /> 
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0" />
     
-    <link rel="stylesheet"  href="vendor/jquery.mobile.css" />
-
     <!-- vendor scripts -->
     <script src="vendor/jquery-1.6.2.min.js"></script>
     <script src="vendor/underscore.js"></script>
@@ -90,8 +88,6 @@
         }
     </style>
     
-    <script src="vendor/jquery.mobile.min.js"></script>
-
 </head>
 
 <body>
@@ -100,22 +96,16 @@
 
     <div data-role="header" data-theme="f">
         <h1><div>When Is?</div><span style="font-weight: normal; font-size: small">Your timing information service...</span></h1>
-        <h1>
-            <div id="buttonbar" data-role="controlgroup" data-type="horizontal" data-inline="true">
-                <a href="#newcountdown" data-role="button" data-inline="true" data-icon="plus" data-theme="b">&nbsp;</a>
-                <a id="searchcountdowns" data-role="button" data-inline="true" data-theme="c">Search</a>
-                <a id="random" data-role="button" data-inline="true" data-theme="c" >Random</a>
-                <a id="fetchWeek" data-role="button" data-inline="true" data-theme="c" >Week</a>
-                <a id="fetchYear" data-role="button" data-inline="true" data-theme="c"  >Year</a>
-                <a id="fetchAll" data-role="button" data-inline="true" data-theme="c"  >All</a>
-                <a id="clear" data-role="button" data-inline="true" data-icon="delete" data-theme="b">&nbsp;</a>
-            </div>
+        <div id="buttonbar" data-role="controlgroup" data-type="horizontal" data-inline="true">
+            <a href="/newcountdown">+</a>
+            <a href="/random" id="random">Random</a>
+            <a href="/week" id="fetchWeek">Week</a>
+            <a href="/month" id="fetchYear">Month</a>
+            <a href="/year" id="fetchYear">Year</a>
+            <a href="/all" id="fetchAll">All</a>
+            <input id="searchbox" autofocus type="text" name="name" id="searchName" value="" />
+        </div>
             
-            <div id="searchbar" data-role="controlgroup" style="display: none">
-                <input id="searchbox" autofocus type="text" name="name" id="searchName" data-inline="true" value="" />
-            </div>
-        </h1>
-        
     </div>
 
     <div class="main-item">
@@ -138,12 +128,12 @@
         
             <div data-role="fieldcontain">
                 <label for="name">Name:</label>
-                <input required autofocus type="text" name="name" id="countdownName" value="" />
+                <input required type="text" name="name" id="countdownName" value="" />
             </div>
             
             <div data-role="fieldcontain">
                 <label for="tags">Tags:</label>
-                <input autofocus type="text" name="tags" id="countdownTags" value="" />
+                <input type="text" name="tags" id="countdownTags" value="" />
             </div>
             
             <div data-role="fieldcontain">
