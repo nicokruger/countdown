@@ -75,6 +75,13 @@ object CountdownService {
   def retrieveById(id: ObjectId): Option[Countdown] = {
     coll.findOne(MongoDBObject("_id" -> id)).map(countdownFromDB)
   }
+  
+  def searchTags(startsWith: Option[String]) = {
+    val regex = if(startsWith.isDefined) ("^" + startsWith.get +".*").r else "".r
+    coll.distinct("tags").collect {
+      case s:String if(!regex.findAllIn(s).isEmpty) => s
+    }
+  }
 
 
   private def dbObjFromAspiring(countdown: AspiringCountdown) =
