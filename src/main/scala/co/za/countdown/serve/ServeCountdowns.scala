@@ -26,8 +26,7 @@ object ServeCountdowns {
   val searchResultMap = (countdown:Countdown) => MillisCountdown(countdown)
 
   val countdowns = unfiltered.filter.Planify {
-    case Path(Seg("tags" :: q :: Nil)) => searchTags(Some(q))
-    case Path(Seg("tags" :: Nil)) => searchTags(None)
+    case Path(Seg("tags" :: q)) => searchTags(q.headOption)
     case GET(Path(Seg("countdown" :: "random" :: Nil))) => randomResponse
     case Path(Seg("countdown" :: "new" :: Nil)) & Params(params) => newResponse(params)
     case Path(Seg("countdown" :: "upsert" :: Nil)) & Params(params) => upsertResponse(params)
