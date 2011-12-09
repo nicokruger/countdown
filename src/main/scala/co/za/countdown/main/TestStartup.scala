@@ -1,10 +1,10 @@
 package co.za.countdown.main
 
-import co.za.countdown.serve.ServeCountdowns
 import java.net.URL
 import unfiltered.jetty.ContextBuilder
-import scalax.io.Resource
 import java.io.File
+import co.za.countdown._
+import unfiltered.jetty.Server
 
 /**
  * User: dawid
@@ -12,16 +12,25 @@ import java.io.File
  * Time: 8:44 PM
  */
 
-object TestStartup extends App {
-  unfiltered.jetty.Http(55555)
-    .context("/") {
-      (builder: ContextBuilder) => builder.filter(ServeCountdowns.countdowns); builder.resources(new URL(getClass.getResource("/static/"), "."))
-    }
-    .context("/filesystem") {
-      (builder: ContextBuilder) => builder.resources(new URL(new File("src/main/resources/static").toURI.toURL, "."))
-    }.run()
+object TestStartup {
+//  unfiltered.jetty.Http(55555)
+//    .context("/") {
+//      (builder: ContextBuilder) => builder.filter(ServeCountdowns.countdowns); builder.resources(new URL(getClass.getResource("/static/"), "."))
+//    }
+//    .context("/filesystem") {
+//      (builder: ContextBuilder) => builder.resources(new URL(new File("src/main/resources/static").toURI.toURL, "."))
+//    }.run()
 /*    .context("/") {
       (builder: ContextBuilder) => builder.resources(new URL(getClass.getResource("/static/"), "."))}
     .context("/filesystem") {
       (builder: ContextBuilder) => builder.resources(new URL(new File("src/main/resources/static").toURI.toURL, "."))}*/
+  
+//  val plans = Seq(new Lookup)
+
+  val plans = Seq(new Lookup, new Create, new Search)
+  def applyPlans = plans.foldLeft(_: Server)(_ filter _)
+
+  def main(args: Array[String]) {
+    applyPlans(unfiltered.jetty.Http(55555)).resources(getClass.getResource("/static/")).run()
+  }
 }

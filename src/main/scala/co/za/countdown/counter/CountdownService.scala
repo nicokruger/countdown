@@ -4,22 +4,16 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.MongoConnection
 import com.mongodb.casbah.commons.conversions.scala._
-import co.za.countdown.Countdown._
 import org.bson.types.ObjectId
 import co.za.countdown.{AspiringCountdown, Countdown}
 import scala.None
 import org.joda.time.{DateTime, LocalDate}
-
-/**
- * User: dawid
- * Date: 11/29/11
- * Time: 7:46 PM
- */
+import org.joda.time.DateTime
 
 object CountdownService {
   RegisterJodaTimeConversionHelpers()
 
-  val mongo = MongoConnection()
+  val mongo = MongoConnection("nicokruger-rt-l")
   val coll = mongo("countDownDB")("countdown")
 
   val eventDateField = "eventDate"
@@ -42,47 +36,40 @@ object CountdownService {
     coll.find(dbObjFromAspiring(countdown)).map(countdownFromDB)
   }
 
-  def search(name: Option[String], start: Option[Long], end: Option[Long], tags: List[String]): List[Countdown] = {
-
-    val tagTuples = tags.map((s: String) => tagsField -> s).toList
-    val nameTuple = name.map( (s:String) => {
+  def search(name: Option[String], end: Option[Long], tags: List[String], start: Option[Long] = Option(new DateTime().getMillis)): List[Countdown] = {
+    val tagTuples = tags.map(tagsField -> _).toList
+    val nameTuple = name.map( s => {
       val queryString = s.split("[\\s\\,]").foldLeft(new StringBuilder("(?i).*"))( (builder:StringBuilder, b:String) => builder.append(".*").append(b) )
-      nameField -> ( queryString.r)
+      nameField -> (queryString.r)
     }).toList
 
     val orTuples = (tagTuples ++ nameTuple)
 
-    val q: DBObject = if(orTuples.isEmpty) MongoDBObject() else $or(orTuples: _*)
-
+    val q: DBObject = if (orTuples.isEmpty) MongoDBObject() else $or(orTuples: _*)
     val results = coll.find(q) map countdownFromDB
 
-    results.filter((countdown: Countdown) => {
-      (start.isEmpty || (countdown.eventDate.compareTo(new DateTime(start.get)) >= 0)) &&
-        (end.isEmpty || (countdown.eventDate.compareTo(new DateTime(end.get)) <= 0))
+    results.filter(c => {
+      (start.isEmpty || (c.eventDate.compareTo(new DateTime(start.get)) >= 0)) &&
+        (end.isEmpty || (c.eventDate.compareTo(new DateTime(end.get)) <= 0))
     }).toList
   }
 
   def week: List[Countdown] = {
-    var now = new DateTime().getMillis
-    var then = new DateTime().plusWeeks(1).getMillis 
-    search(None, Some(now), Some(then), List())
+    val then = new DateTime().plusWeeks(1).getMillis
+    search(None, Some(then), List())
   }
   
   def day: List[Countdown] = {
-    var now = new DateTime().getMillis
-    var then = new DateTime().plusDays(1).getMillis
-    search(None, Some(now), Some(then), List())
+    val then = new DateTime().plusDays(1).getMillis
+    search(None, Some(then), List())
   }
   
   def month: List[Countdown] = {
-    var now = new DateTime().getMillis
-    var then = new DateTime().plusMonths(1).getMillis
-    search(None, Some(now), Some(then), List())
+    val then = new DateTime().plusMonths(1).getMillis
+    search(None, Some(then), List())
   }
-  def retrieveAll: List[Countdown] = {
-    (for {dbobj <- coll}
-    yield countdownFromDB(dbobj)).toList
-  }
+
+  def retrieveAll: (Int, List[Countdown]) = (coll.size, coll.map(countdownFromDB(_)).toList)
 
   def retrieveByName(name: String): Option[Countdown] = {
     coll.findOne(MongoDBObject(nameField -> name)).map(countdownFromDB)
@@ -91,7 +78,6 @@ object CountdownService {
   def retrieveById(id: ObjectId): Option[Countdown] = {
     coll.findOne(MongoDBObject("_id" -> id)).map(countdownFromDB)
   }
-
 
   private def dbObjFromAspiring(countdown: AspiringCountdown) =
     MongoDBObject(nameField -> countdown.name, eventDateField -> countdown.eventDate, tagsField -> countdown.tags)
@@ -113,7 +99,3 @@ object CountdownService {
     }
   }
 }
-
-//object CMain extends App{
-//  CountdownService.upsertCountdown( ("test item", new DateTime()))
-//}

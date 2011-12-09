@@ -14,7 +14,7 @@ case class Countdown(name: String, url:String, eventDate: DateTime, tags:List[St
 case class AspiringCountdown(name:String, eventDate:DateTime, tags:List[String])
 
 //temp workaround
-case class MillisCountdown(name: String, eventDate: Long, tags:List[String], url: String )
+case class MillisCountdown(name: String, eventDate: Long, tags:List[String], url: String)
 
 object MillisCountdown {
   def apply(countdown: Countdown):MillisCountdown = MillisCountdown(countdown.name, countdown.eventDate.getMillis, countdown.tags, countdown.url)

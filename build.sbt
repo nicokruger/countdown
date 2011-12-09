@@ -18,9 +18,4 @@ libraryDependencies ++= Seq(
   "org.specs2" %% "specs2" % "1.6.1" % "test",
   "org.specs2" %% "specs2-scalaz-core" % "6.0.1" % "test",
   "org.scalaz" %% "scalaz-core" % "6.0.3",
-  "net.sourceforge.htmlunit" % "htmlunit" % "2.9",
-  "junit" % "junit" % "4.10" % "test",
-  "com.google.guava" % "guava" % "r08")
-
-resolvers ++= Seq("dataworx" at "http://dataworx:8081/nexus/content/repositories/public")
-
+  "net.sourceforge.htmlunit" % "htmlunit" % "2.9")
