@@ -1,6 +1,6 @@
 package co.za.countdown
 
-import counter.CountdownService
+import counter.{Countdowns, CountdownService}
 import unfiltered.filter.Plan
 import unfiltered.request._
 import net.liftweb.json.Serialization.write
@@ -152,6 +152,6 @@ object Transform {
   }
 
   def asJson(l: List[Countdown]) = asJsonT(l.map(c => new MillisCountdown(c.name, c.eventDate, c.tags, c.url)))
-  def asJsonT(l: List[MillisCountdown]) = JsonContent ~> ResponseString(write("countdowns" -> l))
+  def asJsonT(l: List[MillisCountdown]) = JsonContent ~> ResponseString(write(Countdowns(l)))
 }
 

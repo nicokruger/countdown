@@ -5,17 +5,19 @@ import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.MongoConnection
 import com.mongodb.casbah.commons.conversions.scala._
 import org.bson.types.ObjectId
-import co.za.countdown.{AspiringCountdown, Countdown}
 import scala.None
 import org.joda.time.{DateTime, LocalDate}
 import util.matching.Regex
 import org.joda.time.{DateTimeZone, DateTime, LocalDate}
+import co.za.countdown.{MillisCountdown, AspiringCountdown, Countdown}
 
 /**
  * User: dawid
  * Date: 11/29/11
  * Time: 7:46 PM
  */
+
+case class Countdowns(countdowns: List[MillisCountdown])
 
 object CountdownService {
   RegisterJodaTimeConversionHelpers()
