@@ -5,6 +5,7 @@ var actions = function (model) {
             url: url, 
             data: data,
             type: method,
+            dataType: "json",
             success: function (o) {
                 model.clear();
                 o.hasOwnProperty("countdowns") ? model.putCountdowns(o.countdowns) : model.putCountdown(o);
@@ -57,41 +58,35 @@ var actions = function (model) {
         },
         
         random: function (e) {
-            countdownAction("/countdown/random", {}, "GET");
+            countdownAction("/random", {}, "GET");
         },
         clear: function (e) {
             model.clear();
         },
     
+        nextDay: function (e) {
+            e !== undefined && e.preventDefault();
+            countdownAction("/day", {}, "GET", function () { });
+        },
         nextWeek: function (e) {
             e !== undefined && e.preventDefault();
-            timeSearch(Date.today().add(7).days().getTime());
+            countdownAction("/week", {}, "GET", function () { });
         },
         nextMonth: function (e) {
             e !== undefined && e.preventDefault();
-            timeSearch(Date.today().add(1).month().getTime());
-        },
-        tomorrow: function (e) {
-            e !== undefined && e.preventDefault();
-            timeSearch(Date.today().add(1).day().getTime());
+            countdownAction("/month", {}, "GET", function () { });
         },
         nextWeekend: function (e) {
             e !== undefined && e.preventDefault();
-            timeSearch(Date.parse("next sunday").getTime());
+            countdownAction("/weekend", {}, "GET", function () { });
         },
         nextYear: function (e) {
             e !== undefined && e.preventDefault();
-            timeSearch(Date.today().add(1).year().getTime());
-        },
-        
-        all: function(e) {
-            e !== undefined && e.preventDefault();
-            
-            countdownAction("/countdownlist", {}, "GET");
+            countdownAction("/year", {}, "GET", function () { });
         },
         
         search: function(data) {
-            countdownAction("/countdown/search", data, "POST");
+            countdownAction("/countdowns", data, "GET");
         }
 
                 

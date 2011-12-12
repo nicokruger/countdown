@@ -13,12 +13,10 @@ $(function () {
     
     $("#clear").click(action.clear);
     
+    $("#fetchDay").click(action.nextDay);
     $("#fetchWeek").click(action.nextWeek);
-    $("#fetchTomorrow").click(action.tomorrow);
     $("#fetchMonth").click(action.nextMonth);
-    $("#fetchWeekend").click(action.nextWeekend);
     $("#fetchYear").click(action.nextYear);
-    $("#fetchAll").click(action.all);
     
     $("#searchForm").bind("submit", action.search);
     

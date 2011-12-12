@@ -31,6 +31,10 @@ object TestStartup {
   def applyPlans = plans.foldLeft(_: Server)(_ filter _)
 
   def main(args: Array[String]) {
-    applyPlans(unfiltered.jetty.Http(55555)).resources(getClass.getResource("/static/")).run()
+    applyPlans(unfiltered.jetty.Http(55555)).resources(getClass.getResource("/static/"))
+      .context("/filesystem") {
+        (builder: ContextBuilder) => builder.resources(new URL(new File("src/main/resources/static").toURI.toURL, "."))
+      }
+      .run()
   }
 }

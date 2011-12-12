@@ -98,11 +98,11 @@
         <h1><div>When Is?</div><span style="font-weight: normal; font-size: small">Your timing information service...</span></h1>
         <div id="buttonbar" data-role="controlgroup" data-type="horizontal" data-inline="true">
             <a href="/newcountdown">+</a>
-            <a href="/random" id="random">Random</a>
-            <a href="/week" id="fetchWeek">Week</a>
-            <a href="/month" id="fetchYear">Month</a>
-            <a href="/year" id="fetchYear">Year</a>
-            <a href="/all" id="fetchAll">All</a>
+            <a id="random">Random</a>
+            <a id="fetchDay">Day</a>
+            <a id="fetchWeek">Week</a>
+            <a id="fetchYear">Month</a>
+            <a id="fetchYear">Year</a>
             <input id="searchbox" autofocus type="text" name="name" id="searchName" value="" />
         </div>
             
@@ -111,11 +111,11 @@
     <div class="main-item">
         <ul id="countdownlist">
         </ul>
+        
+        <div id="info">
+        </div>
     </div>
 
-    <div style="display: none" data-theme="c" data-role="footer" data-position="fixed" >
-        <h4 id="info"></h4>
-    </div>
 </div>
 
 <div data-role="page" id="newcountdown">

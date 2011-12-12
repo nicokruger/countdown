@@ -6,12 +6,22 @@ import unfiltered.filter.Plan
 import unfiltered.request._
 import net.liftweb.json.Serialization.write
 import unfiltered.response._
-import net.liftweb.json.{NoTypeHints, Serialization}
 import com.gargoylesoftware.htmlunit.{BrowserVersion, WebClient}
 import com.gargoylesoftware.htmlunit.html.HtmlPage
+import org.joda.time.DateTime
+import net.liftweb.json._
+import co.za.countdown.Transform.RicherOption
+import org.bson.types.ObjectId
 
 object Transform {
   implicit val formats = Serialization.formats(NoTypeHints)
+  
+  class RicherOption[+A](o: Option[A]) {
+    def fold[X](s: A => X,  d: => X) = {
+      o.map(s).getOrElse(d)
+    }
+  }
+  implicit def toRicherOption[A](o: Option[A]) = new RicherOption[A](o)
 
   def asHtml(l: List[Countdown]) = {
     def transform(ll: List[Countdown]) = {
@@ -38,33 +48,35 @@ class Lookup extends Plan {
   import Transform._
 
   def intent = {
+
+    // This matches /
     case req @ GET(Path(Seg(Nil))) => {
       val Params(countdown) = req
       val id = countdown.headOption.map(_._1).getOrElse("")
 
       // Something more idiomatic?
       if (id == "") {
-        Ok ~> displayWeek
+        Ok ~> asHtml(CountdownService.week)
       } else {
-        ResponseString("id: " + id)
+        CountdownService.retrieveById(new ObjectId(id)).fold(
+           (c:Countdown) => Ok ~> asHtml(List(c)),
+          Ok ~> JsonContent ~> ResponseString(write("error" -> "Cannot find by id")))
       }
     }
 
     case GET(Path(Seg("day" :: Nil)) & Accepts.Html(_)) => asHtml(CountdownService.day)
     case GET(Path(Seg("week" :: Nil))& Accepts.Html(_)) => asHtml(CountdownService.week)
     case GET(Path(Seg("month" :: Nil))& Accepts.Html(_)) => asHtml(CountdownService.month)
-    case GET(Path(Seg("year" :: Nil))& Accepts.Html(_)) => ResponseString("/year")
+    case GET(Path(Seg("year" :: Nil))& Accepts.Html(_)) => asHtml(CountdownService.year)
 
     case GET(Path(Seg("day" :: Nil)) & Accepts.Json(_)) => asJson(CountdownService.day)
     case GET(Path(Seg("week" :: Nil))& Accepts.Json(_)) => asJson(CountdownService.week)
     case GET(Path(Seg("month" :: Nil))& Accepts.Json(_)) => asJson(CountdownService.month)
-    case GET(Path(Seg("year" :: Nil))& Accepts.Json(_)) => ResponseString("/year")
+    case GET(Path(Seg("year" :: Nil))& Accepts.Json(_)) => asJson(CountdownService.year)
 
     case GET(Path(Seg("random" :: Nil)) & Accepts.Html(_)) => asHtml(random)
     case GET(Path(Seg("random" :: Nil)) & Accepts.Json(_)) => asJson(random)
   }
-
-  def displayWeek = ResponseString("/week")
 
   // Clean up this method
   def random: List[Countdown] = {
@@ -100,17 +112,47 @@ class Search extends Plan {
     val endMillis = params.getOrElse("end", Nil).map(_.toLong).headOption
     val tags = params.getOrElse("tags", Nil).flatMap(_.split(",")).toList
 
-    println(name)
-    println(startMillis)
-    println(endMillis)
-    println(tags)
     CountdownService.search(name, endMillis, tags, startMillis).map(searchResultMap)
   }
 }
 
 class Create extends Plan {
+  import Transform._
+
   def intent = {
-    case POST(Path(Seg("countdown" :: "new" :: Nil)) & Accepts.Json(_)) => ResponseString("asdsd")
-    case POST(Path(Seg("countdown" :: "upsert" :: Nil)) & Accepts.Json(_)) => ResponseString("upsert still todo")
+    case req @ POST(Path(Seg("countdown" :: "new" :: Nil)) & Accepts.Json(_)) =>
+      val Params(p) = req
+      newCountdown(p)
+    case req @ POST(Path(Seg("countdown" :: "upsert" :: Nil)) & Accepts.Json(_)) =>
+      val Params(p) = req
+      upsertCountdown(p)
   }
+
+  def upsertCountdown(params: Map[String, Seq[String]]) = {
+    add(params, (name, eventMillis: Long, tags) => {
+      CountdownService.upsertCountdown(AspiringCountdown(name, new DateTime(eventMillis.toLong), tags.split(",").toList))
+      ResponseString(write("success" -> "Countdown upserted"))
+    })
+  }
+
+  def newCountdown(params: Map[String, Seq[String]]) = {
+    add(params, (name, eventMillis: Long, tags) => {
+      CountdownService.insertCountdown(AspiringCountdown(name, new DateTime(eventMillis.toLong), tags.split(",").toList)) match {
+        case Some(c: Countdown) => JsonContent ~> asJson(List(c))
+        case _ => errorResponse("Could not persist")
+      }
+    })
+  }
+
+  def add(params: Map[String, Seq[String]], paramHandler: (String, Long, String) => ResponseFunction[Any]) = {
+    val name = params.getOrElse("name", Nil).headOption
+    val eventMillis = params.getOrElse("eventDate", Nil).map(_.toLong).headOption
+    val tags = params.getOrElse("tags", Nil).headOption
+    (name, eventMillis, tags) match {
+      case (Some(name: String), Some(eventMillis: Long), Some(tags: String)) => paramHandler(name, eventMillis, tags)
+      case _ => errorResponse("your params are broken")
+    }
+  }
+
+  def errorResponse(msg: String) = JsonContent ~> ResponseString(write("error" -> msg))
 }

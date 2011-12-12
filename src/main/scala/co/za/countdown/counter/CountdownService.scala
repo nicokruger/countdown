@@ -69,6 +69,11 @@ object CountdownService {
     search(None, Some(then), List())
   }
 
+  def year: List[Countdown] = {
+    val then = new DateTime().plusYears(1).getMillis
+    search(None, Some(then), List())
+  }
+
   def retrieveAll: (Int, List[Countdown]) = (coll.size, coll.map(countdownFromDB(_)).toList)
 
   def retrieveByName(name: String): Option[Countdown] = {
