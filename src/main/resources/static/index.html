@@ -21,91 +21,28 @@
     <script src="index.js"></script>
     <script src="model.js"></script>
     <script src="actions.js"></script>
-    
-    <style type="text/css">
-    
-    
-        .seperator {
-            font-size: 16px;
-            margin-left:5px;
-            margin-right:5px;
-            color: rgb(0, 0, 0);
-        }
-        
-        .timer {
-            font-size: 32px;
-            color: rgb(82, 139, 183);
-        }
-        
-        #countdownlist {
-            list-style: none;
-            margin: 0 auto;
-            width: 800px;
-        }
-        
-        li.countdown {
-            padding: 5px;
-            margin-bottom: 3px;
-            border-bottom: 1px solid #000000;
-            width: 800px;
-            overflow: auto;
-        }
-        
-        h5.countdown {
-            font-size: 16px;
-        }
 
-
-        .ui-page {
-            background: #ffffff;
-        }
-        
-        span.countdown {
-            display: block;
-            float: left;
-            width: 400px;
-            margin: 0px;
-            padding: 0px;
-        }
-        span.countdown-name {
-            display: block;
-            width: 300px;
-            float: left;
-            margin: 0px;
-            padding: 0px;
-            font-size: large;
-            font-weight: normal;
-            color: grey;
-        }
-        span.countdown-tags {
-            display: block;
-            float: left;
-            width: 70px;
-            margin: 0px;
-            padding: 0px;
-            font-size: small;
-            color: grey;
-        }
-    </style>
-    
+    <link rel="stylesheet" href="whenis.css" />
 </head>
 
 <body>
 
-<div data-role="page" id="mainview" data-theme="c">
+<div id="mainview">
 
-    <div data-role="header" data-theme="f">
-        <h1><div>When Is?</div><span style="font-weight: normal; font-size: small">Your timing information service...</span></h1>
-        <div id="buttonbar" data-role="controlgroup" data-type="horizontal" data-inline="true">
-            <a href="/newcountdown">+</a>
-            <a id="random">Random</a>
-            <a id="fetchDay">Day</a>
-            <a id="fetchWeek">Week</a>
-            <a id="fetchYear">Month</a>
-            <a id="fetchYear">Year</a>
+    <div id="headerbar">
+        <h1 >
+            <div class="header">When Is?</div>
+            <span class="header" style="font-weight: normal; font-size: small">Release dates for movies, games, music, sports and everthing in between</span>
+        </h1>
+        <div id="buttonbar">
+            <input type="button" href="#newcountdown" value="+" />
             <input id="searchbox" autofocus type="text" name="name" id="searchName" value="" />
+            <input type="button" id="random" value="Random" />
+            <input type="button" id="fetchDay" value="Day" />
+            <input type="button" id="fetchWeek" value="Week" />
+            <input type="button" id="fetchYear" value="Month" />
+            <input type="button" id="fetchYear" value="Year" />
         </div>
-            
     </div>
 
     <div class="main-item">
@@ -116,38 +53,38 @@
         </div>
     </div>
 
+    <div id="newcountdown">
+        <div>
+            <h5>Add countdown</h5>
+        </div>
+        
+        <div>
+            <form id="newcountdownForm">
+            
+                <div>
+                    <label for="name">Name:</label>
+                    <input required type="text" name="name" id="countdownName" value="" />
+                </div>
+                
+                <div>
+                    <label for="tags">Tags:</label>
+                    <input type="text" name="tags" id="countdownTags" value="" />
+                </div>
+                
+                <div>
+                    <label for="tags">When<br/><span style="font-size: small"> (YY-MM-DDThh:mm eg. 2011-12-01T13:00)</span></label>
+                    <input required type="datetime-local" name="datetime" id="countdownDatetime" value="" />
+                </div>
+                
+                <button type="submit">Add countdown</a>
+                
+            </form> 
+            
+        </div>
+        
 </div>
 
-<div data-role="page" id="newcountdown">
-    <div data-role="header" data-theme="c" >
-        <h1>Add countdown</h1>
-    </div>
-    
-    <div data-role="content">
-        <form id="newcountdownForm" data-ajax="false">
-        
-            <div data-role="fieldcontain">
-                <label for="name">Name:</label>
-                <input required type="text" name="name" id="countdownName" value="" />
-            </div>
-            
-            <div data-role="fieldcontain">
-                <label for="tags">Tags:</label>
-                <input type="text" name="tags" id="countdownTags" value="" />
-            </div>
-            
-            <div data-role="fieldcontain">
-                <label for="tags">When<br/><span style="font-size: small"> (YY-MM-DDThh:mm eg. 2011-12-01T13:00)</span></label>
-                
-                <input required type="datetime-local" name="datetime" id="countdownDatetime" value="" />
-            </div>
-            
-            <a data-role="button" data-inline="true" data-icon="back" href="#mainview">Back</a>
-            <button type="submit" data-inline="true" data-icon="plus">Add countdown</a>
-            
-        </form> 
-        
-    </div>
+
 </div>
 
 
