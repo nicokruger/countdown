@@ -1,7 +1,6 @@
 package co.za.countdown
 
 import counter.CountdownService
-import serve.Countdowns
 import unfiltered.filter.Plan
 import unfiltered.request._
 import net.liftweb.json.Serialization.write
@@ -12,37 +11,6 @@ import org.joda.time.DateTime
 import net.liftweb.json._
 import co.za.countdown.Transform.RicherOption
 import org.bson.types.ObjectId
-
-object Transform {
-  implicit val formats = Serialization.formats(NoTypeHints)
-  
-  class RicherOption[+A](o: Option[A]) {
-    def fold[X](s: A => X,  d: => X) = {
-      o.map(s).getOrElse(d)
-    }
-  }
-  implicit def toRicherOption[A](o: Option[A]) = new RicherOption[A](o)
-
-  def asHtml(l: List[Countdown]) = {
-    def transform(ll: List[Countdown]) = {
-      val webClient = new WebClient(BrowserVersion.FIREFOX_3_6)
-      val page: HtmlPage = webClient.getPage(Thread.currentThread.getContextClassLoader.getResource("static/index.html"))
-
-      page.executeJavaScript("var m = model($(\"#countdownlist\"));\n")
-      ll.foreach(e => {
-        val converted = new MillisCountdown(e.name, e.eventDate, e.tags, e.url)
-        page.executeJavaScript("m.putCountdown(" + write(converted) + ");")
-      })
-      page.asXml
-    }
-    HtmlContent ~> ResponseString(transform(l))
-  }
-
-  def asJson(l: List[Countdown]) = asJsonT(l.map(c => new MillisCountdown(c.name, c.eventDate, c.tags, c.url)))
-//    JsonContent ~> ResponseString(write(Countdowns())))
-
-  def asJsonT(l: List[MillisCountdown]) = JsonContent ~> ResponseString(write(Countdowns(l)))
-}
 
 class Lookup extends Plan {
   import Transform._
@@ -95,13 +63,10 @@ class Search extends Plan {
   import co.za.countdown.Transform._
 
   def intent = {
-    case c @ GET(Path(Seg("countdowns" :: Nil)) & Accepts.Json(_)) => {
-      val Params(p) = c
-      asJsonT(searchResponse(p))
-    }
-
-    case GET(Path(Seg("tags" :: Nil)) & Accepts.Json(_)) => ResponseString("coundotnes")
+    case c @ Path(Seg("countdowns" :: Nil)) & Accepts.Json(_) => { val Params(p) = c; asJsonT(searchResponse(p)) }
+    case GET(Path(Seg("tags" :: q)) & Accepts.Json(_)) => searchTags(q.headOption)
   }
+
 
   def searchResponse(params: Map[String, Seq[String]]) = {
     val searchResultMap = (countdown:Countdown) => MillisCountdown(countdown)
@@ -113,6 +78,10 @@ class Search extends Plan {
     val tags = params.getOrElse("tags", Nil).flatMap(_.split(",")).toList
 
     CountdownService.search(name, endMillis, tags, startMillis).map(searchResultMap)
+  }
+
+  def searchTags(q: Option[String]) = {
+    JsonContent ~> ResponseString(write("tags" -> CountdownService.searchTags(q)))
   }
 }
 
@@ -156,3 +125,33 @@ class Create extends Plan {
 
   def errorResponse(msg: String) = JsonContent ~> ResponseString(write("error" -> msg))
 }
+
+object Transform {
+  implicit val formats = Serialization.formats(NoTypeHints)
+
+  class RicherOption[+A](o: Option[A]) {
+    def fold[X](s: A => X,  d: => X) = {
+      o.map(s).getOrElse(d)
+    }
+  }
+  implicit def toRicherOption[A](o: Option[A]) = new RicherOption[A](o)
+
+  def asHtml(l: List[Countdown]) = {
+    def transform(ll: List[Countdown]) = {
+      val webClient = new WebClient(BrowserVersion.FIREFOX_3_6)
+      val page: HtmlPage = webClient.getPage(Thread.currentThread.getContextClassLoader.getResource("static/index.html"))
+
+      page.executeJavaScript("var m = model($(\"#countdownlist\"));\n")
+      ll.foreach(e => {
+        val converted = new MillisCountdown(e.name, e.eventDate, e.tags, e.url)
+        page.executeJavaScript("m.putCountdown(" + write(converted) + ");")
+      })
+      page.asXml
+    }
+    HtmlContent ~> ResponseString(transform(l))
+  }
+
+  def asJson(l: List[Countdown]) = asJsonT(l.map(c => new MillisCountdown(c.name, c.eventDate, c.tags, c.url)))
+  def asJsonT(l: List[MillisCountdown]) = JsonContent ~> ResponseString(write("countdowns" -> l))
+}
+

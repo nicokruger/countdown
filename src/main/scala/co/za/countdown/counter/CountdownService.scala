@@ -8,7 +8,14 @@ import org.bson.types.ObjectId
 import co.za.countdown.{AspiringCountdown, Countdown}
 import scala.None
 import org.joda.time.{DateTime, LocalDate}
-import org.joda.time.DateTime
+import util.matching.Regex
+import org.joda.time.{DateTimeZone, DateTime, LocalDate}
+
+/**
+ * User: dawid
+ * Date: 11/29/11
+ * Time: 7:46 PM
+ */
 
 object CountdownService {
   RegisterJodaTimeConversionHelpers()
@@ -36,21 +43,26 @@ object CountdownService {
     coll.find(dbObjFromAspiring(countdown)).map(countdownFromDB)
   }
 
+  def regexify( query: String) : Regex =  {
+    query.split("""[\s\,]""")
+      .foldLeft(new StringBuilder("(?i).*"))( (builder:StringBuilder, part:String) => builder.append(".*").append(part) )
+    .toString.r
+  }
+
+  def regexTuples(fieldName:String, values: List[String]) : List[ (String, Regex) ] = {
+    values.foldLeft(List[(String, Regex)]())((acc: List[(String, Regex)], s: String) => (fieldName, regexify(s)) :: acc)
+
+  }
+
   def search(name: Option[String], end: Option[Long], tags: List[String], start: Option[Long] = Option(new DateTime().getMillis)): List[Countdown] = {
-    val tagTuples = tags.map(tagsField -> _).toList
-    val nameTuple = name.map( s => {
-      val queryString = s.split("[\\s\\,]").foldLeft(new StringBuilder("(?i).*"))( (builder:StringBuilder, b:String) => builder.append(".*").append(b) )
-      nameField -> (queryString.r)
-    }).toList
 
-    val orTuples = (tagTuples ++ nameTuple)
+    val tagsQuery : DBObject = if (!tags.isEmpty) $or(regexTuples(tagsField, tags):_*) else MongoDBObject()
+    val query = regexTuples(nameField, name.toList).foldLeft(tagsQuery)(_+=_)
+    val results = coll.find(query) map countdownFromDB
 
-    val q: DBObject = if (orTuples.isEmpty) MongoDBObject() else $or(orTuples: _*)
-    val results = coll.find(q) map countdownFromDB
-
-    results.filter(c => {
-      (start.isEmpty || (c.eventDate.compareTo(new DateTime(start.get)) >= 0)) &&
-        (end.isEmpty || (c.eventDate.compareTo(new DateTime(end.get)) <= 0))
+    results.filter((countdown: Countdown) => {
+      (start.isEmpty || (countdown.eventDate.getMillis >= start.get)) &&
+        (end.isEmpty || (countdown.eventDate.getMillis <= end.get))
     }).toList
   }
 
@@ -82,6 +94,13 @@ object CountdownService {
 
   def retrieveById(id: ObjectId): Option[Countdown] = {
     coll.findOne(MongoDBObject("_id" -> id)).map(countdownFromDB)
+  }
+  
+  def searchTags(startsWith: Option[String]) = {
+    val regex = if(startsWith.isDefined) ("^" + startsWith.get +".*").r else "".r
+    coll.distinct("tags").collect {
+      case s:String if(!regex.findAllIn(s).isEmpty) => s
+    }
   }
 
   private def dbObjFromAspiring(countdown: AspiringCountdown) =
